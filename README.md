@@ -1,4 +1,14 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+**Crypto Tracker** was built using the following technologies:
+
+- **Next.js** and **TypeScript**: for a solid, modern, and maintainable foundation, facilitating the development of high-performance and secure websites.
+
+- **Storybook**: for developing and testing UI components in isolation, ensuring consistency and quality across the application.
+
+- **TailwindCSS**: for rapid, clean, and customized design using utility classes, allowing great styling flexibility without writing custom CSS.
+
+- **Lucide Icons**: for modern and dynamic vector icons, providing a professional visual touch that is easily customizable.
+
+This combination of tools allows for the creation of a modern, responsive, and visually appealing user interface, while ensuring a clean and easily maintainable code structure.
 
 ## Getting Started
 

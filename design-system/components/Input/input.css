@@ -1,0 +1,35 @@
+/* Base styles for the input */
+.storybook-input {
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
+  outline: none;
+}
+
+/* Styles for small input */
+.storybook-input--small {
+  font-size: 12px;
+  padding: 6px;
+}
+
+/* Styles for medium input */
+.storybook-input--medium {
+  font-size: 16px;
+  padding: 8px;
+}
+
+/* Styles for large input */
+.storybook-input--large {
+  font-size: 20px;
+  padding: 10px;
+}
+
+/* Focused input */
+.storybook-input:focus {
+  border-color: #0070f3;
+  box-shadow: 0 0 4px rgba(0, 112, 243, 0.5);
+}

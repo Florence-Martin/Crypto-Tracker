@@ -1,0 +1,20 @@
+import { Meta, Story } from "@storybook/addon-docs";
+import { Input } from "./Input";
+
+<Meta title="Components/Input" component={Input} />
+
+# Input
+
+Le composant `Input` est utilisé pour capturer des données utilisateur.
+
+## Props
+
+- **placeholder** : Texte d'exemple affiché dans le champ.
+- **value** : Valeur actuelle du champ.
+- **onChange** : Fonction appelée lors de la modification de la valeur.
+- **size** : Taille du champ (`small`, `medium`, `large`).
+- **backgroundColor** : Couleur d'arrière-plan personnalisée.
+
+<Story name="Default">
+  <Input placeholder="Type here..." value="" onChange={() => {}} />
+</Story>
