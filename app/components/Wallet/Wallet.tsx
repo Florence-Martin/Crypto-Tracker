@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button } from "../../../design-system"; // Import du Button depuis votre design-system
+import { Button } from "../../../design-system";
+import { Coins } from "lucide-react";
 
 interface Crypto {
   id: string;
@@ -17,73 +18,108 @@ interface WalletProps {
 }
 
 const Wallet: React.FC<WalletProps> = ({ cryptos, onAddToPortfolio }) => {
-  const [cryptoInput, setCryptoInput] = useState<string>(""); // Saisie pour l'ID ou le symbole de la crypto
-  const [quantity, setQuantity] = useState<string>(""); // Saisie pour la quantité (comme une chaîne)
-
-  const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-
-    // Autorise une chaîne vide ou une valeur correspondant à des chiffres (avec décimales)
-    if (value === "" || /^\d*\.?\d*$/.test(value)) {
-      setQuantity(value);
-    }
-  };
+  const [selectedCryptoId, setSelectedCryptoId] = useState<string>(""); // ID de la crypto sélectionnée
+  const [quantity, setQuantity] = useState<string>(""); // Quantité saisie
+  const [error, setError] = useState<string | null>(null); // Gestion des erreurs
 
   const handleAddToPortfolio = () => {
-    // Recherche de la crypto correspondante
+    setError(null); // Réinitialise les erreurs
+
+    // Recherche de la crypto sélectionnée
     const selectedCrypto = cryptos.find(
-      (crypto) =>
-        crypto.id.toLowerCase() === cryptoInput.toLowerCase() ||
-        crypto.symbol.toLowerCase() === cryptoInput.toLowerCase()
+      (crypto) => crypto.id === selectedCryptoId
     );
 
     // Validation avant l'ajout
     if (!selectedCrypto) {
-      alert("Cryptocurrency not found. Please enter a valid ID or symbol.");
+      setError("Please select a cryptocurrency.");
       return;
     }
 
     const quantityNumber = parseFloat(quantity);
     if (isNaN(quantityNumber) || quantityNumber <= 0) {
-      alert("Please enter a valid quantity greater than 0.");
+      setError("Please enter a valid quantity greater than 0.");
       return;
     }
 
     // Ajout au portefeuille
     onAddToPortfolio(selectedCrypto, quantityNumber);
-    setCryptoInput(""); // Réinitialiser le champ de la crypto
-    setQuantity(""); // Réinitialiser le champ de quantité
+
+    // Réinitialisation des champs
+    setSelectedCryptoId("");
+    setQuantity("");
   };
 
   return (
-    <div className="wallet-container">
-      <h2 className="text-xl mt-4 font-bold mb-4">Add to Portfolio</h2>
+    <div className="mt-8 p-6 bg-gray-900 shadow-md rounded-lg max-w-md mx-auto border border-gray-700">
+      <h2 className="text-xl font-bold mb-6 flex items-center text-white">
+        <span className=" text-blue-500 mr-2 ">
+          <Coins className="w-6 h-6" />
+        </span>
+        Add to my wallet
+      </h2>
 
-      {/* Champ pour entrer l'ID ou le symbole de la crypto */}
-      <input
-        type="text"
-        className="mb-4 p-2 border border-gray-300 rounded w-full text-gray-800 placeholder-gray-800"
-        value={cryptoInput}
-        onChange={(e) => setCryptoInput(e.target.value)}
-        placeholder="Enter cryptocurrency ID or symbol (e.g., bitcoin or BTC)"
-      />
+      {/* Dropdown pour sélectionner une cryptomonnaie */}
+      <div className="mb-4">
+        <label
+          htmlFor="crypto-select"
+          className="block text-sm font-medium text-gray-400 mb-2"
+        >
+          Select a cryptocurrency
+        </label>
+        <select
+          id="crypto-select"
+          className="block w-full bg-gray-800 border border-gray-600 text-white rounded-md py-2 px-3 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          value={selectedCryptoId}
+          onChange={(e) => setSelectedCryptoId(e.target.value)}
+        >
+          <option value="">Select a cryptocurrency</option>
+          {cryptos.map((crypto) => (
+            <option key={crypto.id} value={crypto.id}>
+              {crypto.name} ({crypto.symbol.toUpperCase()})
+            </option>
+          ))}
+        </select>
+      </div>
 
-      {/* Champ pour entrer la quantité */}
-      <input
-        type="text"
-        className="mb-4 p-2 border border-gray-300 rounded w-full text-gray-800 placeholder-gray-800"
-        value={quantity}
-        onChange={handleQuantityChange}
-        placeholder="Enter quantity (e.g., 0.1)"
-      />
+      {/* Input pour entrer la quantité */}
+      <div className="mb-4">
+        <label
+          htmlFor="quantity"
+          className="block text-sm font-medium text-gray-400 mb-2"
+        >
+          Enter quantity
+        </label>
+        <input
+          id="quantity"
+          type="text"
+          className="block w-full bg-gray-800 border border-gray-600 text-white rounded-md py-2 px-3 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          value={quantity}
+          onChange={(e) => {
+            const value = e.target.value;
+            // Autorise uniquement les chiffres et les points décimaux
+            if (value === "" || /^\d*\.?\d*$/.test(value)) {
+              setQuantity(value);
+            }
+          }}
+          placeholder="e.g., 0.1"
+        />
+      </div>
+
+      {/* Message d'erreur */}
+      {error && (
+        <div className="mb-4 text-sm text-red-600 bg-red-100 p-2 rounded">
+          {error}
+        </div>
+      )}
 
       {/* Bouton d'ajout */}
       <Button
         primary
         size="medium"
-        label="Add"
+        label="Add to Portfolio"
         onClick={handleAddToPortfolio}
-        backgroundColor="#4A90E2"
+        backgroundColor="linear-gradient(to right, #4CAF50, #81C784)"
         color="white"
       />
     </div>
