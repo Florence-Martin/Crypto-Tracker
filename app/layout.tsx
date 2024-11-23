@@ -4,6 +4,7 @@ import "./globals.css";
 import NavBar from "./components/Navbar/NavBar";
 import { CryptoProvider } from "./context/CryptoContext";
 import { PortfolioProvider } from "./context/PortfolioContext";
+import Footer from "./components/Footer/Footer";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -38,6 +39,7 @@ export default function RootLayout({
         <CryptoProvider>
           <PortfolioProvider>{children}</PortfolioProvider>
         </CryptoProvider>
+        <Footer />
       </body>
     </html>
   );

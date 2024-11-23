@@ -25,23 +25,25 @@ const HomePage = () => {
   };
 
   return (
-    <div className="mx-8">
-      <SearchBar onSearch={handleSearch} />
-      <Table
-        data={filteredCryptos.map((crypto) => ({
-          name: crypto.name,
-          symbol: crypto.symbol,
-          price: crypto.current_price,
-          priceChange: crypto.price_change_percentage_24h,
-        }))}
-      />
-      <Wallet
-        cryptos={filteredCryptos}
-        onAddToPortfolio={(crypto, quantity) => {
-          addToPortfolio(crypto, quantity); // Appelle la fonction pour ajouter au portefeuille
-        }}
-      />
-    </div>
+    <main>
+      <div className="mx-8">
+        <SearchBar onSearch={handleSearch} />
+        <Table
+          data={filteredCryptos.map((crypto) => ({
+            name: crypto.name,
+            symbol: crypto.symbol,
+            price: crypto.current_price,
+            priceChange: crypto.price_change_percentage_24h,
+          }))}
+        />
+        <Wallet
+          cryptos={filteredCryptos}
+          onAddToPortfolio={(crypto, quantity) => {
+            addToPortfolio(crypto, quantity); // Appelle la fonction pour ajouter au portefeuille
+          }}
+        />
+      </div>
+    </main>
   );
 };
 
