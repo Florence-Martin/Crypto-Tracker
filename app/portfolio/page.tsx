@@ -14,11 +14,11 @@ const PortfolioPage = () => {
   );
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">My Portfolio</h1>
+    <div className="p-4 my-64 md:my-48">
+      <h1 className="text-2xl font-bold mb-4">My Wallet</h1>
 
       {portfolio.length === 0 ? (
-        <p className="text-gray-500">Your portfolio is empty.</p>
+        <p className="text-gray-500">Your wallet is empty.</p>
       ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-gray-800">
@@ -46,7 +46,7 @@ const PortfolioPage = () => {
             })}
           </div>
           <h3 className="text-xl font-bold mt-4">
-            Total Portfolio Value: ${totalPortfolioValue.toFixed(2)}
+            Total wallet value: ${totalPortfolioValue.toFixed(2)}
           </h3>
         </>
       )}

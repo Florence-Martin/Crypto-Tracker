@@ -5,7 +5,7 @@ import CryptoLogo3D from "../Crypto/CryptoLogo3D";
 
 const NavBar: React.FC = () => {
   return (
-    <nav className="bg-gray-900 text-white py-6 shadow-lg">
+    <nav className="bg-gray-900 text-white py-6 shadow-lg fixed top-0 w-full">
       {/* Conteneur principal */}
       <div className="container  flex flex-col md:flex-row items-center justify-between px-6">
         {/* Logo et Titre */}

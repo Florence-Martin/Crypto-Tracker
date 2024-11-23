@@ -51,7 +51,7 @@ const Wallet: React.FC<WalletProps> = ({ cryptos, onAddToPortfolio }) => {
   };
 
   return (
-    <div className="mt-8 p-6 bg-gray-900 shadow-md rounded-lg max-w-md mx-auto border border-gray-700">
+    <div className="my-8 p-6 bg-gray-900 shadow-md rounded-lg max-w-md mx-auto border border-gray-700">
       <h2 className="text-xl font-bold mb-6 flex items-center text-white">
         <span className=" text-blue-500 mr-2 ">
           <Coins className="w-6 h-6" />
