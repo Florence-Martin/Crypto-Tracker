@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Input } from "../../../design-system";
+import { Input, Button } from "../../../design-system";
 
 export const SearchBar: React.FC<{
   onSearch: (value: string) => void;
@@ -13,15 +13,32 @@ export const SearchBar: React.FC<{
     onSearch(newValue);
   };
 
+  const handleReset = () => {
+    setValue(""); // Réinitialiser la valeur
+    onSearch(""); // Exécuter une recherche vide
+  };
+
   return (
-    <Input
-      placeholder="Search for a cryptocurrency..."
-      value={value} // Liaison avec l'état local
-      onChange={handleChange} // Gestionnaire de changement
-      size="medium" // Exemple de taille, peut être ajusté
-      backgroundColor={error ? "#ffe6e6" : "#f5f5f5"} // Couleur de fond selon l'état d'erreur
-      color={error ? "#ff4d4f" : "#333"} // Couleur du texte selon l'état d'erreur
-      error={error} // Passe la prop d'erreur à l'Input
-    />
+    <div className="flex w-1/4 items-center space-x-4 mb-4">
+      {/* Input de recherche */}
+      <Input
+        placeholder="Search for a cryptocurrency..."
+        value={value} // Liaison avec l'état local
+        onChange={handleChange} // Gestionnaire de changement
+        size="medium" // Exemple de taille, peut être ajusté
+        backgroundColor={error ? "#ffe6e6" : "#f5f5f5"}
+        color={error ? "#ff4d4f" : "#333"}
+        error={error}
+      />
+
+      {/* Bouton de réinitialisation */}
+      <Button
+        label="Reset"
+        onClick={handleReset}
+        backgroundColor="#f5f5f5"
+        color="#333"
+        size="small"
+      />
+    </div>
   );
 };
