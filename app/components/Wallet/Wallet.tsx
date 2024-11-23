@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Button } from "../../../design-system";
 import { Coins } from "lucide-react";
+import Toast from "@/design-system/components/Toast/Toast";
 
 interface Crypto {
   id: string;
@@ -21,6 +22,7 @@ const Wallet: React.FC<WalletProps> = ({ cryptos, onAddToPortfolio }) => {
   const [selectedCryptoId, setSelectedCryptoId] = useState<string>(""); // ID de la crypto sélectionnée
   const [quantity, setQuantity] = useState<string>(""); // Quantité saisie
   const [error, setError] = useState<string | null>(null); // Gestion des erreurs
+  const [showToast, setShowToast] = useState<boolean>(false); // État pour afficher ou masquer le toast
 
   const handleAddToPortfolio = () => {
     setError(null); // Réinitialise les erreurs
@@ -48,16 +50,32 @@ const Wallet: React.FC<WalletProps> = ({ cryptos, onAddToPortfolio }) => {
     // Réinitialisation des champs
     setSelectedCryptoId("");
     setQuantity("");
+
+    // Affiche le toast
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000); // Masque le toast après 3 secondes
   };
 
   return (
     <div className="my-8 p-6 bg-gray-900 shadow-md rounded-lg max-w-md mx-auto border border-gray-700">
       <h2 className="text-xl font-bold mb-6 flex items-center text-white">
-        <span className=" text-blue-500 mr-2 ">
+        <span className="text-blue-500 mr-2">
           <Coins className="w-6 h-6" />
         </span>
         Add to my wallet
       </h2>
+
+      {/* Toast */}
+      {showToast && (
+        <Toast
+          immediate
+          level="success"
+          onClose={() => setShowToast(false)} // Gère la fermeture
+          variant="colored"
+        >
+          Successfully added to my wallet!
+        </Toast>
+      )}
 
       {/* Dropdown pour sélectionner une cryptomonnaie */}
       <div className="mb-4">
@@ -117,7 +135,7 @@ const Wallet: React.FC<WalletProps> = ({ cryptos, onAddToPortfolio }) => {
       <Button
         primary
         size="medium"
-        label="Add to Portfolio"
+        label="Add"
         onClick={handleAddToPortfolio}
         backgroundColor="linear-gradient(to right, #4CAF50, #81C784)"
         color="white"
