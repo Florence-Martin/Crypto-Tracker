@@ -1,18 +1,22 @@
+# Crypto Tracker
+
 **Crypto Tracker** was built using the following technologies:
 
-- **Next.js** and **TypeScript**: for a solid, modern, and maintainable foundation, facilitating the development of high-performance and secure websites.
+- **Next.js** and **TypeScript**: for a solid, modern, and maintainable foundation, facilitating the development of high-performance and secure websites, while ensuring type safety and developer productivity.
 
-- **Storybook**: for developing and testing UI components in isolation, ensuring consistency and quality across the application.
+- **Storybook**: for developing and testing UI components in isolation, ensuring consistency and quality across the application by creating a central hub for reusable components.
 
-- **TailwindCSS**: for rapid, clean, and customized design using utility classes, allowing great styling flexibility without writing custom CSS.
+- **TailwindCSS**: for rapid, clean, and customized design using utility classes, allowing great styling flexibility without writing custom CSS, and enabling seamless theme support for dark and light modes.
 
-- **Shadcn UI**: for charts
+- **Shadcn UI**: for prebuilt, accessible, and customizable UI components, accelerating development while maintaining design consistency.
 
-- **Chart.js**:
+- **Chart.js**: for integrating highly customizable and interactive charts, providing users with clear and visually compelling data visualizations.
 
-- **Lucide Icons**: for modern and dynamic vector icons, providing a professional visual touch that is easily customizable.
+- **Lucide Icons**: for modern and dynamic vector icons, providing a professional visual touch that is easily customizable and responsive to the application's theme.
 
-This combination of tools allows for the creation of a modern, responsive, and visually appealing user interface, while ensuring a clean and easily maintainable code structure.
+- **next-themes**: for effortless theme switching (light/dark mode), enhancing user experience and visual accessibility.
+
+This combination of tools allows for the creation of a modern, responsive, and visually appealing user interface, while ensuring a clean and easily maintainable code structure. By leveraging these technologies, **Crypto Tracker** delivers an optimal balance between performance, design, and user-centric functionality.
 
 ## Getting Started
 
