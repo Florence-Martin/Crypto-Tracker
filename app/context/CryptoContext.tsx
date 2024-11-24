@@ -1,3 +1,4 @@
+// Récupère les données des cryptos via le contexte useCrypto.
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";

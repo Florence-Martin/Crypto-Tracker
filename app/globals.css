@@ -28,6 +28,11 @@ body {
     --destructive-foreground: 210 40% 98%;
     --ring: 222.2 84% 4.9%;
     --radius: 0.5rem;
+    --chart-1: 220 70% 50%; /* Bleu principal */
+    --chart-2: 160 60% 45%; /* Cyan */
+    --chart-3: 30 80% 55%; /* Orange */
+    --chart-4: 280 65% 60%; /* Violet */
+    --chart-5: 340 75% 55%; /* Rose */
   }
 
   .dark {
@@ -50,6 +55,11 @@ body {
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
     --ring: 212.7 26.8% 83.9%;
+    --chart-1: 220 60% 45%;
+    --chart-2: 160 50% 40%;
+    --chart-3: 30 70% 50%;
+    --chart-4: 280 55% 50%;
+    --chart-5: 340 65% 50%;
   }
 }
 

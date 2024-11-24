@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button, IconToast } from "../../../design-system";
-import { CheckCircle } from "lucide-react"; // Icône de succès
+import { CheckCircle, Coins } from "lucide-react";
+import { Button, IconToast } from "@/design-system";
 
 interface Crypto {
   id: string;
@@ -58,6 +58,7 @@ const Wallet: React.FC<WalletProps> = ({ cryptos, onAddToPortfolio }) => {
   return (
     <div className="my-8 p-6 bg-card text-card-foreground shadow-md rounded-lg max-w-md mx-auto border border-border">
       <h2 className="text-xl font-bold mb-6 flex items-center">
+        <Coins className="w-6 h-6 mr-2" />
         Add to my wallet
       </h2>
 

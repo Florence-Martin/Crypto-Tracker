@@ -1,3 +1,4 @@
+// Gère l’ajout de cryptos au portefeuille via le contexte usePortfolio.
 "use client";
 
 import React, { createContext, useContext, useState } from "react";
