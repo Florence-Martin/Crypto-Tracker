@@ -5,6 +5,7 @@ import NavBar from "./components/Navbar/NavBar";
 import { CryptoProvider } from "./context/CryptoContext";
 import { PortfolioProvider } from "./context/PortfolioContext";
 import Footer from "./components/Footer/Footer";
+import { ThemeProvider } from "next-themes";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -33,13 +34,19 @@ export default function RootLayout({
         <link rel="icon" href="/crypto_tracker_logo.ico" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} bg-cover bg-center`}
       >
-        <NavBar />
-        <CryptoProvider>
-          <PortfolioProvider>{children}</PortfolioProvider>
-        </CryptoProvider>
-        <Footer />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem={true}
+        >
+          <NavBar />
+          <CryptoProvider>
+            <PortfolioProvider>{children}</PortfolioProvider>
+          </CryptoProvider>
+          <Footer />
+        </ThemeProvider>
       </body>
     </html>
   );

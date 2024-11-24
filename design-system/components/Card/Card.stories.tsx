@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react"; // Importation des types pour Storybook
-import { Card } from "./Card"; // Importation du composant Card
-import "./card.css"; // Importation des styles CSS spécifiques au composant
+import { Card } from "./Card";
+import "./card.css";
 
 // Définition des métadonnées pour le composant Card dans Storybook
 const meta = {

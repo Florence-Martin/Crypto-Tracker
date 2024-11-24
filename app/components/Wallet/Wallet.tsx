@@ -56,8 +56,8 @@ const Wallet: React.FC<WalletProps> = ({ cryptos, onAddToPortfolio }) => {
   };
 
   return (
-    <div className="my-8 p-6 bg-gray-900 shadow-md rounded-lg max-w-md mx-auto border border-gray-700">
-      <h2 className="text-xl font-bold mb-6 flex items-center text-white">
+    <div className="my-8 p-6 bg-card text-card-foreground shadow-md rounded-lg max-w-md mx-auto border border-border">
+      <h2 className="text-xl font-bold mb-6 flex items-center">
         Add to my wallet
       </h2>
 
@@ -75,17 +75,17 @@ const Wallet: React.FC<WalletProps> = ({ cryptos, onAddToPortfolio }) => {
         </IconToast>
       )}
 
-      {/* Dropdown pour sélectionner une cryptomonnaie */}
+      {/* Dropdown */}
       <div className="mb-4">
         <label
           htmlFor="crypto-select"
-          className="block text-sm font-medium text-gray-400 mb-2"
+          className="block text-sm font-medium text-muted-foreground mb-2"
         >
           Select a cryptocurrency
         </label>
         <select
           id="crypto-select"
-          className="block w-full bg-gray-800 border border-gray-600 text-white rounded-md py-2 px-3 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          className="block w-full bg-muted text-foreground border border-border rounded-md py-2 px-3 shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
           value={selectedCryptoId}
           onChange={(e) => setSelectedCryptoId(e.target.value)}
         >
@@ -98,22 +98,21 @@ const Wallet: React.FC<WalletProps> = ({ cryptos, onAddToPortfolio }) => {
         </select>
       </div>
 
-      {/* Input pour entrer la quantité */}
+      {/* Input */}
       <div className="mb-4">
         <label
           htmlFor="quantity"
-          className="block text-sm font-medium text-gray-400 mb-2"
+          className="block text-sm font-medium text-muted-foreground mb-2"
         >
           Enter quantity
         </label>
         <input
           id="quantity"
           type="text"
-          className="block w-full bg-gray-800 border border-gray-600 text-white rounded-md py-2 px-3 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          className="block w-full bg-muted text-foreground border border-border rounded-md py-2 px-3 shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
           value={quantity}
           onChange={(e) => {
             const value = e.target.value;
-            // Autorise uniquement les chiffres et les points décimaux
             if (value === "" || /^\d*\.?\d*$/.test(value)) {
               setQuantity(value);
             }
@@ -122,21 +121,21 @@ const Wallet: React.FC<WalletProps> = ({ cryptos, onAddToPortfolio }) => {
         />
       </div>
 
-      {/* Message d'erreur */}
+      {/* Error */}
       {error && (
-        <div className="mb-4 text-sm text-red-600 bg-red-100 p-2 rounded">
+        <div className="mb-4 text-sm text-destructive-foreground bg-destructive p-2 rounded">
           {error}
         </div>
       )}
 
-      {/* Bouton d'ajout */}
+      {/* Add Button */}
       <Button
         primary
         size="medium"
         label="Add"
         onClick={handleAddToPortfolio}
-        backgroundColor="linear-gradient(to right, #4CAF50, #81C784)"
-        color="white"
+        backgroundColor="var(--primary)" /* Dynamique */
+        color="var(--primary-foreground)" /* Dynamique */
       />
     </div>
   );

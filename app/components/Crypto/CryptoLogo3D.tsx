@@ -23,7 +23,7 @@ const CryptoLogo: React.FC<CryptoLogoProps> = ({
       <defs>
         <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#4A90E2" />
-          <stop offset="100%" stopColor="#73f07f" />
+          <stop offset="100%" stopColor="#58c7f5" />
         </linearGradient>
         <filter id="glow">
           <feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
