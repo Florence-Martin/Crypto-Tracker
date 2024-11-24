@@ -3,5 +3,19 @@
     "next/core-web-vitals",
     "next/typescript",
     "plugin:storybook/recommended"
+  ],
+  "rules": {
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["*.stories.*"],
+      "rules": {
+        "@typescript-eslint/no-unused-vars": "off" // Désactive dans les fichiers Storybook si nécessaire
+      }
+    }
   ]
 }

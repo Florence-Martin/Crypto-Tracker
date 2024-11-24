@@ -6,6 +6,10 @@
 
 - **TailwindCSS**: for rapid, clean, and customized design using utility classes, allowing great styling flexibility without writing custom CSS.
 
+- **Shadcn UI**: for charts
+
+- **Chart.js**:
+
 - **Lucide Icons**: for modern and dynamic vector icons, providing a professional visual touch that is easily customizable.
 
 This combination of tools allows for the creation of a modern, responsive, and visually appealing user interface, while ensuring a clean and easily maintainable code structure.

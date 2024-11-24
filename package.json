@@ -11,12 +11,21 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "@radix-ui/react-select": "^2.1.2",
     "@types/axios": "^0.9.36",
+    "@types/recharts": "^1.8.29",
     "axios": "^1.7.7",
+    "chart.js": "^4.4.6",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
     "lucide-react": "^0.460.0",
     "next": "15.0.3",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-chartjs-2": "^5.2.0",
+    "react-dom": "^18.3.1",
+    "recharts": "^2.13.3",
+    "tailwind-merge": "^2.5.4",
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^3.2.2",

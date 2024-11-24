@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button } from "../../../design-system";
-import { Coins } from "lucide-react";
-import Toast from "@/design-system/components/Toast/Toast";
+import { Button, IconToast } from "../../../design-system";
+import { CheckCircle } from "lucide-react"; // Icône de succès
 
 interface Crypto {
   id: string;
@@ -59,22 +58,21 @@ const Wallet: React.FC<WalletProps> = ({ cryptos, onAddToPortfolio }) => {
   return (
     <div className="my-8 p-6 bg-gray-900 shadow-md rounded-lg max-w-md mx-auto border border-gray-700">
       <h2 className="text-xl font-bold mb-6 flex items-center text-white">
-        <span className="text-blue-500 mr-2">
-          <Coins className="w-6 h-6" />
-        </span>
         Add to my wallet
       </h2>
 
       {/* Toast */}
       {showToast && (
-        <Toast
-          immediate
+        <IconToast
+          title="Added to wallet"
+          icon={<CheckCircle className="text-green-500" />}
+          iconSize={24}
           level="success"
-          onClose={() => setShowToast(false)} // Gère la fermeture
-          variant="colored"
+          onClose={() => setShowToast(false)}
+          immediate
         >
-          Successfully added to my wallet!
-        </Toast>
+          The cryptocurrency has been successfully added to your wallet.
+        </IconToast>
       )}
 
       {/* Dropdown pour sélectionner une cryptomonnaie */}
