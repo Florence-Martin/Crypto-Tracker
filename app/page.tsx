@@ -6,7 +6,7 @@ import { Table } from "./components/Table/Table";
 import { SearchBar } from "./components/Searchbar/SearchBar";
 import { useCrypto } from "../app/context/CryptoContext";
 import { usePortfolio } from "../app/context/PortfolioContext";
-import { LineChart, Line, CartesianGrid, Dot } from "recharts";
+import { LineChart, Line, CartesianGrid, Dot, XAxis, Tooltip } from "recharts";
 import {
   Card,
   CardContent,
@@ -15,21 +15,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  ChartTooltip,
-  ChartTooltipContent,
-  ChartContainer,
-} from "@/components/ui/chart";
+import { ChartContainer } from "@/components/ui/chart";
 import { Button } from "@/design-system";
 import { BadgeDollarSign } from "lucide-react";
 
-// Configuration des données du graphique
 const chartConfig = {
   current_price: {
     label: "Current Price",
     color: "hsl(var(--chart-2))",
   },
-} as const;
+};
 
 const colors = [
   "hsl(var(--chart-1))",
@@ -43,7 +38,7 @@ const HomePage: React.FC = () => {
 
   const [filteredCryptos, setFilteredCryptos] = useState(cryptos || []);
   const [view, setView] = useState<"table" | "graph">("table");
-  const [isWalletOpen, setIsWalletOpen] = useState(false); // État pour ouvrir/fermer la modal
+  const [isWalletOpen, setIsWalletOpen] = useState(false);
 
   useEffect(() => {
     setFilteredCryptos(cryptos || []);
@@ -59,12 +54,9 @@ const HomePage: React.FC = () => {
   return (
     <main className="relative w-screen h-screen bg-background">
       <div className="mx-8 my-44 md:my-36">
-        {/* Barre de recherche */}
         <div className="flex flex-col md:flex-row justify-between mb-6">
           <SearchBar onSearch={handleSearch} />
-          {/* Boutons pour basculer entre tableau et graphique */}
           <div className="flex items-center gap-4">
-            {/* Bouton pour ouvrir la modal Wallet */}
             <button
               onClick={() => setIsWalletOpen(true)}
               className="flex items-center gap-2 text-sm text-primary hover:text-[#75ef75] transition"
@@ -72,7 +64,6 @@ const HomePage: React.FC = () => {
               <BadgeDollarSign className="w-6 h-6" />
               Add to Wallet
             </button>
-
             <Button
               primary={view === "table"}
               label="Table"
@@ -88,23 +79,20 @@ const HomePage: React.FC = () => {
           </div>
         </div>
 
-        {/* Affichage conditionnel */}
         {view === "table" ? (
-          <div className="mb-6">
-            <Table
-              data={filteredCryptos.map((crypto) => ({
-                name: crypto.name,
-                symbol: crypto.symbol,
-                price: crypto.current_price,
-                priceChange: crypto.price_change_percentage_24h,
-              }))}
-            />
-          </div>
+          <Table
+            data={filteredCryptos.map((crypto) => ({
+              name: crypto.name,
+              symbol: crypto.symbol,
+              price: crypto.current_price,
+              priceChange: crypto.price_change_percentage_24h,
+            }))}
+          />
         ) : filteredCryptos.length > 1 ? (
           <Card className="mb-6">
             <CardHeader>
               <CardTitle>Cryptocurrency Prices</CardTitle>
-              <CardDescription>Real-time data</CardDescription>
+              <CardDescription>Real-time cryptocurrency data</CardDescription>
             </CardHeader>
             <CardContent>
               <ChartContainer config={chartConfig}>
@@ -114,37 +102,36 @@ const HomePage: React.FC = () => {
                     current_price: crypto.current_price,
                     fill: colors[index % colors.length],
                   }))}
-                  margin={{ top: 24, left: 24, right: 24 }}
+                  margin={{ top: 24, left: 24, right: 24, bottom: 24 }}
                 >
-                  <CartesianGrid vertical={false} />
-                  <ChartTooltip
-                    cursor={false}
-                    content={
-                      <ChartTooltipContent
-                        indicator="line"
-                        nameKey="current_price"
-                        hideLabel
-                      />
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="name"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={10}
+                  />
+                  <Tooltip
+                    content={({ payload }) =>
+                      payload?.[0] ? (
+                        <div className="p-2 bg-gray-800 text-white rounded">
+                          <p>{payload[0].payload.name}</p>
+                          <p>${payload[0].payload.current_price.toFixed(2)}</p>
+                        </div>
+                      ) : null
                     }
                   />
                   <Line
                     dataKey="current_price"
-                    type="natural"
+                    type="monotone"
                     stroke="hsl(var(--chart-2))"
                     strokeWidth={2}
-                    dot={({
-                      payload,
-                      ...props
-                    }: {
-                      payload: { name: string; fill: string };
-                      cx: number;
-                      cy: number;
-                    }) => (
+                    dot={({ cx, cy, payload }) => (
                       <Dot
-                        key={payload.name}
+                        key={`dot-${payload.name}`}
+                        cx={cx}
+                        cy={cy}
                         r={5}
-                        cx={props.cx}
-                        cy={props.cy}
                         fill={payload.fill}
                         stroke={payload.fill}
                       />
@@ -154,11 +141,9 @@ const HomePage: React.FC = () => {
               </ChartContainer>
             </CardContent>
             <CardFooter className="flex-col items-start gap-2 text-sm">
-              <div className="flex gap-2 font-medium leading-none">
-                Real-time price updates
-              </div>
-              <div className="leading-none text-muted-foreground">
-                Data for available cryptocurrencies.
+              <div className="font-medium">Real-time updates</div>
+              <div className="text-muted-foreground">
+                Data fetched from your context.
               </div>
             </CardFooter>
           </Card>
@@ -168,7 +153,6 @@ const HomePage: React.FC = () => {
           </p>
         )}
 
-        {/* Modal Wallet */}
         {isWalletOpen && (
           <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
             <div className="relative bg-background text-foreground rounded-lg p-6 shadow-lg max-w-lg w-full">

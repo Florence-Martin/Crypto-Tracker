@@ -18,6 +18,7 @@ interface PortfolioItem {
   quantity: number;
   current_price: number;
   total_value: number;
+  priceHistory: { date: string; price: number }[]; // Historique des prix
 }
 
 interface PortfolioContextProps {
@@ -40,6 +41,8 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({
         (item) => item.id === crypto.id
       );
 
+      const currentDate = new Date().toISOString();
+
       if (existingCrypto) {
         return prevPortfolio.map((item) =>
           item.id === crypto.id
@@ -47,6 +50,10 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({
                 ...item,
                 quantity: item.quantity + quantity,
                 total_value: (item.quantity + quantity) * item.current_price,
+                priceHistory: [
+                  ...item.priceHistory,
+                  { date: currentDate, price: crypto.current_price },
+                ],
               }
             : item
         );
@@ -60,6 +67,7 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({
             quantity: quantity,
             current_price: crypto.current_price,
             total_value: quantity * crypto.current_price,
+            priceHistory: [{ date: currentDate, price: crypto.current_price }],
           },
         ];
       }
