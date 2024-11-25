@@ -10,26 +10,39 @@ interface CryptoContextProps {
 
 const CryptoContext = createContext<CryptoContextProps | undefined>(undefined);
 
+interface CryptoContextProps {
+  cryptos: Crypto[];
+  isLoading: boolean;
+  error: string | null;
+}
+
 export const CryptoProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [cryptos, setCryptos] = useState<Crypto[]>([]);
 
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await fetchCryptos(); // Appelle le service fetchCryptos
-        setCryptos(data); // Met à jour l'état avec les données
-      } catch (error) {
-        console.error("Failed to fetch cryptocurrencies:", error);
+        console.log("Fetching cryptos...");
+        const data = await fetchCryptos();
+        setCryptos(data);
+        setError(null);
+      } catch {
+        setError("Failed to fetch cryptocurrencies");
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchData();
-  }, []); // Le hook ne s'exécute qu'une seule fois au montage
+  }, []);
 
   return (
-    <CryptoContext.Provider value={{ cryptos }}>
+    <CryptoContext.Provider value={{ cryptos, isLoading, error }}>
       {children}
     </CryptoContext.Provider>
   );

@@ -18,6 +18,8 @@ import {
 import { ChartContainer } from "@/components/ui/chart";
 import { Button } from "@/design-system";
 import { BadgeDollarSign } from "lucide-react";
+import Loader from "./components/Loader/Loader";
+import { debounce } from "lodash"; //évite des recalculs fréquents
 
 const chartConfig = {
   current_price: {
@@ -33,7 +35,7 @@ const colors = [
 ];
 
 const HomePage: React.FC = () => {
-  const { cryptos } = useCrypto();
+  const { cryptos, isLoading, error } = useCrypto();
   const { addToPortfolio } = usePortfolio();
 
   const [filteredCryptos, setFilteredCryptos] = useState(cryptos || []);
@@ -41,15 +43,25 @@ const HomePage: React.FC = () => {
   const [isWalletOpen, setIsWalletOpen] = useState(false);
 
   useEffect(() => {
-    setFilteredCryptos(cryptos || []);
+    if (cryptos && cryptos.length > 0) {
+      setFilteredCryptos(cryptos);
+    }
   }, [cryptos]);
 
-  const handleSearch = (value: string) => {
+  if (isLoading)
+    return (
+      <p className="flex justify-center items-center">
+        <Loader />
+      </p>
+    );
+  if (error) return <p>{error}</p>;
+
+  const handleSearch = debounce((searchTerm: string) => {
     const filtered = cryptos.filter((crypto) =>
-      crypto.name.toLowerCase().includes(value.toLowerCase())
+      crypto.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredCryptos(filtered);
-  };
+  }, 300);
 
   return (
     <main className="relative w-screen h-screen bg-background">
@@ -79,7 +91,11 @@ const HomePage: React.FC = () => {
           </div>
         </div>
 
-        {view === "table" ? (
+        {isLoading ? (
+          <div className="flex justify-center items-center h-full">
+            <Loader />
+          </div>
+        ) : view === "table" ? (
           <Table
             data={filteredCryptos.map((crypto) => ({
               name: crypto.name,

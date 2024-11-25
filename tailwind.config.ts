@@ -69,6 +69,7 @@ export default {
       animation: {
         fadeIn: "fadeIn 0.5s ease-in-out",
         fadeOut: "fadeOut 0.5s ease-in-out",
+        spin: "spin 0.8s linear infinite",
       },
     },
   },

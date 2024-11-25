@@ -22,17 +22,17 @@
 
 • L’utilisateur doit voir une liste des cryptomonnaies populaires avec leurs informations principales :
 
-• Nom et symbole.
+• Nom.
 
 • Prix actuel.
 
 • Variation sur 24h (%).
 
-• Graphique en sparklines (par exemple via **Chart.js**).
+• Tableau et Graphique en sparklines (par exemple via **Chart.js**).
 
 2. **Tri et recherche** :
 
-• Une barre de recherche permet de filtrer les cryptomonnaies par nom ou symbole.
+• Une barre de recherche permet de filtrer les cryptomonnaies par nom.
 
 • Un tri doit être possible par capitalisation, prix ou variation.
 
