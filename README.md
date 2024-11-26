@@ -4,6 +4,8 @@
 
 - **Next.js** and **TypeScript**: for a solid, modern, and maintainable foundation, facilitating the development of high-performance and secure websites, while ensuring type safety and developer productivity.
 
+- **IndexedDB**: data persistence library, powerful for storing large volumes of data.
+
 - **Storybook**: for developing and testing UI components in isolation, ensuring consistency and quality across the application by creating a central hub for reusable components.
 
 - **TailwindCSS**: for rapid, clean, and customized design using utility classes, allowing great styling flexibility without writing custom CSS, and enabling seamless theme support for dark and light modes.

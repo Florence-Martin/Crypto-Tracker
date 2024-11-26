@@ -3,10 +3,10 @@ import React from "react";
 
 const Loader: React.FC = () => {
   return (
-    <div className="flex items-center justify-center w-full h-full bg-transparent">
-      <div className="relative flex items-center justify-center w-36 h-36 rounded-full bg-gradient-to-b from-red-500 to-red-700 animate-spin">
-        <div className="absolute w-full h-full bg-transparent rounded-full"></div>
-      </div>
+    <div className="relative flex justify-center items-center w-12 h-12 rounded-full">
+      <span className="absolute w-12 h-12 border-2 border-gray-300 rounded-full animate-spin">
+        <span className="absolute top-[-10px] left-1/2 transform -translate-x-1/2 w-4.5 h-4.5 rounded-full bg-black shadow-[0_0_20px_rgb(10,10,10),0_0_60px_rgb(10,10,10)]"></span>
+      </span>
     </div>
   );
 };

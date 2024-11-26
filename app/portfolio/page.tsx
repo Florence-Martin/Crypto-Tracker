@@ -18,7 +18,9 @@ const PortfolioPage = () => {
       <h1 className="text-2xl font-bold mb-4">My Wallet</h1>
 
       {portfolio.length === 0 ? (
-        <p className="text-gray-500">Your wallet is empty.</p>
+        <p className="text-gray-500">
+          Your wallet is empty. Start adding cryptos to track your investments!
+        </p>
       ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 text-gray-800">
@@ -33,13 +35,14 @@ const PortfolioPage = () => {
                   ? ((item.current_price - averagePrice) / averagePrice) * 100
                   : 0;
 
-              // Utilisation du composant `Card` provenant du design-system
               return (
                 <Card
-                  key={item.symbol}
+                  key={item.id}
                   name={item.name}
                   symbol={item.symbol}
                   price={item.current_price}
+                  quantity={item.quantity}
+                  totalValue={item.total_value.toFixed(2)}
                   priceChange={priceChange}
                 />
               );

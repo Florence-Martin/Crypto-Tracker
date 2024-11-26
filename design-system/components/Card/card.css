@@ -1,5 +1,5 @@
 .crypto-card {
-  border: 1px solid hsl(var(--border));
+  border: 1px solid hsl(var(--border)) !important;
   border-radius: var(--radius);
   padding: 16px;
   background-color: hsl(var(--card));

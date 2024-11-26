@@ -1,8 +1,8 @@
-// Gère l’ajout de cryptos au portefeuille via le contexte usePortfolio.
 "use client";
 
 import React, { createContext, useContext, useState } from "react";
 
+// Types pour les cryptomonnaies et le portefeuille
 interface Crypto {
   id: string;
   name: string;
@@ -26,6 +26,7 @@ interface PortfolioContextProps {
   addToPortfolio: (crypto: Crypto, quantity: number) => void;
 }
 
+// Contexte pour gérer le portefeuille
 const PortfolioContext = createContext<PortfolioContextProps | undefined>(
   undefined
 );
@@ -35,21 +36,31 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [portfolio, setPortfolio] = useState<PortfolioItem[]>([]);
 
+  /**
+   * Ajoute une cryptomonnaie au portefeuille
+   * @param crypto - Données de la cryptomonnaie
+   * @param quantity - Quantité achetée
+   */
   const addToPortfolio = (crypto: Crypto, quantity: number) => {
+    if (!crypto || quantity <= 0) {
+      console.error("Invalid crypto data or quantity provided.");
+      return;
+    }
+
     setPortfolio((prevPortfolio) => {
       const existingCrypto = prevPortfolio.find(
         (item) => item.id === crypto.id
       );
-
       const currentDate = new Date().toISOString();
 
       if (existingCrypto) {
+        // Mise à jour de la cryptomonnaie existante
         return prevPortfolio.map((item) =>
           item.id === crypto.id
             ? {
                 ...item,
                 quantity: item.quantity + quantity,
-                total_value: (item.quantity + quantity) * item.current_price,
+                total_value: (item.quantity + quantity) * crypto.current_price,
                 priceHistory: [
                   ...item.priceHistory,
                   { date: currentDate, price: crypto.current_price },
@@ -58,13 +69,14 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({
             : item
         );
       } else {
+        // Ajout d'une nouvelle cryptomonnaie
         return [
           ...prevPortfolio,
           {
             id: crypto.id,
             name: crypto.name,
             symbol: crypto.symbol,
-            quantity: quantity,
+            quantity,
             current_price: crypto.current_price,
             total_value: quantity * crypto.current_price,
             priceHistory: [{ date: currentDate, price: crypto.current_price }],
@@ -81,6 +93,7 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
+// Hook pour accéder au contexte du portefeuille
 export const usePortfolio = (): PortfolioContextProps => {
   const context = useContext(PortfolioContext);
   if (!context) {

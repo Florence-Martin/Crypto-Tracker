@@ -41,6 +41,8 @@ export const Default: Story = {
     name: "Bitcoin", // Exemple de nom
     symbol: "BTC", // Exemple de symbole
     price: 45000.55, // Exemple de prix
+    quantity: 1, // Ajoute une quantité par défaut
+    totalValue: "45000.55", // Ajoute une valeur totale (en string comme attendu)
     priceChange: 3.25, // Exemple de changement positif en pourcentage
   },
 };
@@ -51,6 +53,8 @@ export const NegativeChange: Story = {
     name: "Ethereum", // Exemple de nom
     symbol: "ETH", // Exemple de symbole
     price: 3000.99, // Exemple de prix
+    quantity: 2, // Ajoute une quantité par défaut
+    totalValue: "6019.98", // Valeur totale = price * quantity (format string)
     priceChange: -2.14, // Exemple de changement négatif en pourcentage
   },
 };
@@ -61,6 +65,8 @@ export const CustomCard: Story = {
     name: "Dogecoin", // Exemple de nom
     symbol: "DOGE", // Exemple de symbole
     price: 0.072, // Exemple de prix
+    quantity: 1000, // Ajoute une quantité par défaut
+    totalValue: "72.00", // Valeur totale (string)
     priceChange: 12.34, // Exemple de changement positif important
   },
 };
