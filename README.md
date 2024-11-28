@@ -4,7 +4,7 @@
 
 - **Next.js** and **TypeScript**: for a solid, modern, and maintainable foundation, facilitating the development of high-performance and secure websites, while ensuring type safety and developer productivity.
 
-- **IndexedDB**: data persistence library, powerful for storing large volumes of data.
+- **MongoDB**: for a scalable and flexible NoSQL database solution, enabling efficient storage and retrieval of large volumes of data, and providing powerful querying and indexing capabilities to support the application's data needs.
 
 - **Storybook**: for developing and testing UI components in isolation, ensuring consistency and quality across the application by creating a central hub for reusable components.
 

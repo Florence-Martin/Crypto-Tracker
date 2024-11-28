@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 // Types pour les cryptomonnaies et le portefeuille
 interface Crypto {
@@ -18,12 +18,13 @@ interface PortfolioItem {
   quantity: number;
   current_price: number;
   total_value: number;
-  priceHistory: { date: string; price: number }[]; // Historique des prix
+  priceHistory: { date: string; price: number }[];
 }
 
 interface PortfolioContextProps {
   portfolio: PortfolioItem[];
-  addToPortfolio: (crypto: Crypto, quantity: number) => void;
+  addToPortfolio: (crypto: Crypto, quantity: number) => Promise<void>;
+  loadPortfolio: () => Promise<void>;
 }
 
 // Contexte pour gérer le portefeuille
@@ -37,57 +38,95 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({
   const [portfolio, setPortfolio] = useState<PortfolioItem[]>([]);
 
   /**
-   * Ajoute une cryptomonnaie au portefeuille
-   * @param crypto - Données de la cryptomonnaie
-   * @param quantity - Quantité achetée
+   * Charge le portefeuille depuis le backend
    */
-  const addToPortfolio = (crypto: Crypto, quantity: number) => {
+  const loadPortfolio = async () => {
+    try {
+      const response = await fetch("/api/portfolio");
+      const data = await response.json();
+      if (data.success) {
+        const normalizedPortfolio = data.data.flatMap(
+          (item: { userId: string; cryptos: Crypto[] }) =>
+            item.cryptos.map((crypto: Crypto) => ({
+              ...crypto,
+              userId: item.userId,
+            }))
+        );
+        setPortfolio(normalizedPortfolio);
+      } else {
+        console.error("Erreur lors du chargement :", data.error);
+      }
+    } catch (error) {
+      console.error("Erreur lors du chargement du portefeuille :", error);
+    }
+  };
+
+  /**
+   * Ajoute une cryptomonnaie au portefeuille
+   */
+  const addToPortfolio = async (crypto: Crypto, quantity: number) => {
+    const existingCrypto = portfolio.find((item) => item.id === crypto.id);
+
     if (!crypto || quantity <= 0) {
       console.error("Invalid crypto data or quantity provided.");
       return;
     }
+    if (existingCrypto) {
+      console.error("Crypto already present in the portfolio.");
+      return;
+    }
 
-    setPortfolio((prevPortfolio) => {
-      const existingCrypto = prevPortfolio.find(
-        (item) => item.id === crypto.id
-      );
-      const currentDate = new Date().toISOString();
+    const currentDate = new Date().toISOString();
 
-      if (existingCrypto) {
-        // Mise à jour de la cryptomonnaie existante
-        return prevPortfolio.map((item) =>
-          item.id === crypto.id
-            ? {
-                ...item,
-                quantity: item.quantity + quantity,
-                total_value: (item.quantity + quantity) * crypto.current_price,
-                priceHistory: [
-                  ...item.priceHistory,
-                  { date: currentDate, price: crypto.current_price },
-                ],
-              }
-            : item
-        );
+    // Construction des données pour une crypto
+    const newCrypto = {
+      id: crypto.id,
+      name: crypto.name,
+      symbol: crypto.symbol,
+      quantity,
+      totalValue: quantity * crypto.current_price, // Calcul correct de totalValue
+      priceHistory: [{ date: currentDate, price: crypto.current_price }], // Historique valide
+    };
+
+    // Construction des données pour le backend
+    const portfolioData = {
+      userId: "12345", // ID utilisateur fictif pour tester
+      cryptos: [newCrypto], // Format attendu par le backend
+    };
+
+    console.log("Données envoyées au backend :", portfolioData);
+
+    try {
+      const response = await fetch("/api/portfolio", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(portfolioData),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        await loadPortfolio(); // Recharge les données après ajout
       } else {
-        // Ajout d'une nouvelle cryptomonnaie
-        return [
-          ...prevPortfolio,
-          {
-            id: crypto.id,
-            name: crypto.name,
-            symbol: crypto.symbol,
-            quantity,
-            current_price: crypto.current_price,
-            total_value: quantity * crypto.current_price,
-            priceHistory: [{ date: currentDate, price: crypto.current_price }],
-          },
-        ];
+        console.error("Erreur lors de l'ajout au backend :", data.error);
       }
-    });
+    } catch (error) {
+      console.error(
+        "Erreur lors de la synchronisation avec le backend :",
+        error
+      );
+    }
   };
 
+  // Charger les données au démarrage
+  useEffect(() => {
+    loadPortfolio();
+  }, []);
+
   return (
-    <PortfolioContext.Provider value={{ portfolio, addToPortfolio }}>
+    <PortfolioContext.Provider
+      value={{ portfolio, addToPortfolio, loadPortfolio }}
+    >
       {children}
     </PortfolioContext.Provider>
   );

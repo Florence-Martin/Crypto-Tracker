@@ -19,7 +19,7 @@ export const SearchBar: React.FC<{
   };
 
   return (
-    <div className="flex md:w-1/4 items-center space-x-4 mb-4">
+    <div className="flex md:w-1/4 items-center space-x-4 mb-4 bg-background text-foreground">
       {/* Input de recherche */}
       <Input
         placeholder="Search for a cryptocurrency..."

@@ -20,6 +20,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "idb": "^8.0.0",
+    "joi": "^17.13.3",
     "lucide-react": "^0.460.0",
     "mongodb": "^6.11.0",
     "mongoose": "^8.8.3",

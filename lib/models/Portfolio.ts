@@ -8,10 +8,17 @@ const PortfolioSchema = new Schema({
       name: { type: String, required: true },
       symbol: { type: String, required: true },
       quantity: { type: Number, required: true },
-      avgPrice: { type: Number, required: true },
+      totalValue: { type: Number, required: true },
+      priceHistory: [
+        {
+          date: { type: Date, required: true },
+          price: { type: Number, required: true },
+        },
+      ],
     },
   ],
 });
 
 const Portfolio = models.Portfolio || model("Portfolio", PortfolioSchema);
+
 export default Portfolio;

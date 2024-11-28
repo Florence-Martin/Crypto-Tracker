@@ -11,7 +11,7 @@ export interface TableProps {
 
 export const Table: React.FC<TableProps> = ({ data }) => {
   return (
-    <table className="w-full border-collapse rounded-lg">
+    <table className="w-full border-collapse rounded-lg bg-background text-foreground">
       <thead>
         <tr>
           <th className="border border-gray-300 p-2 text-center">Name</th>

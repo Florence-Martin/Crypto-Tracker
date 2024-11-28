@@ -29,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="light">
+    <html lang="en">
       <head>
         <link rel="icon" href="/crypto_tracker_logo.ico" />
       </head>
@@ -40,6 +40,7 @@ export default function RootLayout({
           attribute="class"
           defaultTheme="light"
           enableSystem={true}
+          disableTransitionOnChange={true}
         >
           <NavBar />
           <CryptoProvider>

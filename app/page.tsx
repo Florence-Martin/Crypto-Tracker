@@ -50,11 +50,16 @@ const HomePage: React.FC = () => {
 
   if (isLoading)
     return (
-      <p className="flex justify-center items-center">
+      <div className="flex justify-center items-center">
         <Loader />
-      </p>
+      </div>
     );
-  if (error) return <p>{error}</p>;
+  if (error)
+    return (
+      <div>
+        <p>{error}</p>
+      </div>
+    );
 
   const handleSearch = debounce((searchTerm: string) => {
     const filtered = cryptos.filter((crypto) =>
