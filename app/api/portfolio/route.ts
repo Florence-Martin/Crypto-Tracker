@@ -1,5 +1,5 @@
-import dbConnect from "@/lib/dbConnect";
-import Portfolio from "@/lib/models/Portfolio";
+import dbConnect from "../../../lib/dbConnect";
+import Portfolio from "../../../lib/models/Portfolio";
 import { NextResponse } from "next/server";
 import Joi from "joi";
 
@@ -10,12 +10,12 @@ const portfolioSchema = Joi.object({
       id: Joi.string().required(),
       name: Joi.string().required(),
       symbol: Joi.string().required(),
-      quantity: Joi.number().required(),
-      totalValue: Joi.number().required(),
+      quantity: Joi.number().positive().required(),
+      totalValue: Joi.number().required().min(0), // toujours initialisé
       priceHistory: Joi.array().items(
         Joi.object({
           date: Joi.date().required(),
-          price: Joi.number().required(),
+          price: Joi.number().positive().required(),
         })
       ),
     })
@@ -39,6 +39,7 @@ export async function GET(_req: Request) {
 
     const total = await Portfolio.countDocuments();
 
+    // console.log("Returning portfolios:", portfolios);
     return NextResponse.json({
       success: true,
       data: portfolios,
@@ -61,14 +62,12 @@ export async function POST(req: Request) {
   try {
     console.log("Connecting to MongoDB...");
     await dbConnect();
-    // console.log("Connected to MongoDB");
 
     const body = await req.json();
-    // console.log("Request body received:", body);
+    console.log("Received data:", JSON.stringify(body, null, 2)); // Vérifiez ici
 
     const { error } = portfolioSchema.validate(body);
     if (error) {
-      // console.error("Validation error:", error.details[0].message);
       return NextResponse.json(
         { success: false, error: error.details[0].message },
         { status: 400 }
@@ -77,11 +76,8 @@ export async function POST(req: Request) {
 
     console.log("Data is valid, creating portfolio...");
     const newPortfolio = await Portfolio.create(body);
-    // console.log("Portfolio created:", newPortfolio);
-
     return NextResponse.json({ success: true, data: newPortfolio });
   } catch (error) {
-    // console.error("Error in POST route:", error);
     return NextResponse.json(
       { success: false, error: (error as Error).message },
       { status: 500 }

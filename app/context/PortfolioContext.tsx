@@ -9,6 +9,8 @@ interface Crypto {
   symbol: string;
   current_price: number;
   price_change_percentage_24h: number;
+  quantity?: number; // Propriété optionnelle pour la quantité
+  priceHistory?: { date: string; price: number }[]; // Propriété optionnelle pour l'historique des prix
 }
 
 interface PortfolioItem {
@@ -27,7 +29,6 @@ interface PortfolioContextProps {
   loadPortfolio: () => Promise<void>;
 }
 
-// Contexte pour gérer le portefeuille
 const PortfolioContext = createContext<PortfolioContextProps | undefined>(
   undefined
 );
@@ -44,14 +45,23 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       const response = await fetch("/api/portfolio");
       const data = await response.json();
+
       if (data.success) {
+        console.log("Portefeuille chargé depuis le backend :", data.data);
+
         const normalizedPortfolio = data.data.flatMap(
           (item: { userId: string; cryptos: Crypto[] }) =>
             item.cryptos.map((crypto: Crypto) => ({
-              ...crypto,
-              userId: item.userId,
+              id: crypto.id,
+              name: crypto.name,
+              symbol: crypto.symbol,
+              quantity: crypto.quantity || 0,
+              current_price: crypto.current_price || 0,
+              total_value: (crypto.quantity || 0) * (crypto.current_price || 0),
+              priceHistory: crypto.priceHistory || [],
             }))
         );
+
         setPortfolio(normalizedPortfolio);
       } else {
         console.error("Erreur lors du chargement :", data.error);
@@ -65,36 +75,28 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({
    * Ajoute une cryptomonnaie au portefeuille
    */
   const addToPortfolio = async (crypto: Crypto, quantity: number) => {
-    const existingCrypto = portfolio.find((item) => item.id === crypto.id);
-
     if (!crypto || quantity <= 0) {
       console.error("Invalid crypto data or quantity provided.");
-      return;
-    }
-    if (existingCrypto) {
-      console.error("Crypto already present in the portfolio.");
       return;
     }
 
     const currentDate = new Date().toISOString();
 
-    // Construction des données pour une crypto
     const newCrypto = {
       id: crypto.id,
       name: crypto.name,
       symbol: crypto.symbol,
       quantity,
-      totalValue: quantity * crypto.current_price, // Calcul correct de totalValue
+      totalValue: parseFloat((quantity * crypto.current_price).toFixed(2)), // Calcul correct de totalValue
       priceHistory: [{ date: currentDate, price: crypto.current_price }], // Historique valide
     };
 
-    // Construction des données pour le backend
     const portfolioData = {
-      userId: "12345", // ID utilisateur fictif pour tester
-      cryptos: [newCrypto], // Format attendu par le backend
+      userId: "12345",
+      cryptos: [newCrypto],
     };
 
-    console.log("Données envoyées au backend :", portfolioData);
+    console.log("Data to send:", portfolioData);
 
     try {
       const response = await fetch("/api/portfolio", {
@@ -118,7 +120,6 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  // Charger les données au démarrage
   useEffect(() => {
     loadPortfolio();
   }, []);
@@ -132,7 +133,6 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
-// Hook pour accéder au contexte du portefeuille
 export const usePortfolio = (): PortfolioContextProps => {
   const context = useContext(PortfolioContext);
   if (!context) {
