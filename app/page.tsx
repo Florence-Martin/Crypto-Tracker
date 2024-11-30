@@ -72,8 +72,8 @@ const HomePage: React.FC = () => {
   }, 300);
 
   return (
-    <main className="relative w-screen h-screen bg-background">
-      <div className="x-8 my-44 md:my-36">
+    <main className="relative w-screen min-h-screen bg-background overflow-auto mb-24">
+      <div className="mt-44 md:mt-36 mb-10 md:mb-6">
         {/* Section Hero */}
         <Hero />
 
@@ -81,10 +81,10 @@ const HomePage: React.FC = () => {
         <CryptoDashboard />
 
         {/* Barre de recherche */}
-        <div className="flex flex-col md:flex-row mb-6 justify-center">
+        <div className="flex mx-4 flex-col md:flex-row mb-6 justify-center">
           <SearchBar onSearch={handleSearch} />
         </div>
-        <div className="flex items-center gap-4 justify-end">
+        <div className="flex items-center gap-4 mr-4 justify-end">
           <button
             onClick={() => setIsWalletOpen(true)}
             className="flex items-center gap-2 text-sm text-primary hover:text-[#75ef75] transition"
@@ -112,14 +112,16 @@ const HomePage: React.FC = () => {
           <Loader />
         </div>
       ) : view === "table" ? (
-        <Table
-          data={filteredCryptos.map((crypto) => ({
-            name: crypto.name,
-            symbol: crypto.symbol,
-            price: crypto.current_price,
-            priceChange: crypto.price_change_percentage_24h,
-          }))}
-        />
+        <div className="mx-4">
+          <Table
+            data={filteredCryptos.map((crypto) => ({
+              name: crypto.name,
+              symbol: crypto.symbol,
+              price: crypto.current_price,
+              priceChange: crypto.price_change_percentage_24h,
+            }))}
+          />
+        </div>
       ) : filteredCryptos.length > 1 ? (
         <Card className="mb-6">
           <CardHeader>
