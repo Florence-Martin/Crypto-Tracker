@@ -18,20 +18,18 @@ interface WalletProps {
 }
 
 const Wallet: React.FC<WalletProps> = ({ cryptos, onAddToPortfolio }) => {
-  const [selectedCryptoId, setSelectedCryptoId] = useState<string>(""); // ID de la crypto sélectionnée
-  const [quantity, setQuantity] = useState<string>(""); // Quantité saisie
-  const [error, setError] = useState<string | null>(null); // Gestion des erreurs
-  const [showToast, setShowToast] = useState<boolean>(false); // État pour afficher ou masquer le toast
+  const [selectedCryptoId, setSelectedCryptoId] = useState<string>("");
+  const [quantity, setQuantity] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
+  const [showToast, setShowToast] = useState<boolean>(false);
 
   const handleAddToPortfolio = () => {
-    setError(null); // Réinitialise les erreurs
+    setError(null);
 
-    // Recherche de la crypto sélectionnée
     const selectedCrypto = cryptos.find(
       (crypto) => crypto.id === selectedCryptoId
     );
 
-    // Validation avant l'ajout
     if (!selectedCrypto) {
       setError("Please select a cryptocurrency.");
       return;
@@ -43,16 +41,17 @@ const Wallet: React.FC<WalletProps> = ({ cryptos, onAddToPortfolio }) => {
       return;
     }
 
-    // Ajout au portefeuille
     onAddToPortfolio(selectedCrypto, quantityNumber);
 
-    // Réinitialisation des champs
     setSelectedCryptoId("");
     setQuantity("");
 
-    // Affiche le toast
+    console.log("Toast displayed: true");
     setShowToast(true);
-    setTimeout(() => setShowToast(false), 3000); // Masque le toast après 3 secondes
+    setTimeout(() => {
+      setShowToast(false);
+      console.log("Toast hidden: false");
+    }, 3000);
   };
 
   return (
@@ -135,8 +134,8 @@ const Wallet: React.FC<WalletProps> = ({ cryptos, onAddToPortfolio }) => {
         size="medium"
         label="Add"
         onClick={handleAddToPortfolio}
-        backgroundColor="var(--primary)" /* Dynamique */
-        color="var(--primary-foreground)" /* Dynamique */
+        backgroundColor="var(--primary)"
+        color="var(--primary-foreground)"
       />
     </div>
   );

@@ -60,11 +60,11 @@ export async function GET(_req: Request) {
 // Gestionnaire pour les requêtes POST
 export async function POST(req: Request) {
   try {
-    console.log("Connecting to MongoDB...");
+    // console.log("Connecting to MongoDB...");
     await dbConnect();
 
     const body = await req.json();
-    console.log("Received data:", JSON.stringify(body, null, 2)); // Vérifiez ici
+    // console.log("Received data:", JSON.stringify(body, null, 2));
 
     const { error } = portfolioSchema.validate(body);
     if (error) {
@@ -74,7 +74,7 @@ export async function POST(req: Request) {
       );
     }
 
-    console.log("Data is valid, creating portfolio...");
+    // console.log("Data is valid, creating portfolio...");
     const newPortfolio = await Portfolio.create(body);
     return NextResponse.json({ success: true, data: newPortfolio });
   } catch (error) {

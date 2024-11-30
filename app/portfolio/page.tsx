@@ -48,10 +48,10 @@ const PortfolioPage = () => {
         : 0;
 
     // Logs pour débogage
-    console.log("Crypto:", item.name);
-    console.log("Current Price:", currentPrice);
-    console.log("Average Price:", averagePrice);
-    console.log("Price Change (%):", priceChange);
+    // console.log("Crypto:", item.name);
+    // console.log("Current Price:", currentPrice);
+    // console.log("Average Price:", averagePrice);
+    // console.log("Price Change (%):", priceChange);
 
     return {
       ...item,
