@@ -14,6 +14,8 @@ export interface ButtonProps {
   size?: "small" | "medium" | "large";
   /** Button contents */
   label: string;
+  /** Optional icon to display alongside the label */
+  icon?: React.ReactNode;
   /** Optional click handler */
   onClick?: () => void;
 }
@@ -25,6 +27,7 @@ export const Button: React.FC<ButtonProps> = ({
   backgroundColor,
   color = "white",
   label,
+  icon,
   ...props
 }: ButtonProps) => {
   const mode = primary
@@ -38,11 +41,20 @@ export const Button: React.FC<ButtonProps> = ({
       )}
       {...props}
     >
-      {label}
+      {icon && <span className="button-icon">{icon}</span>}
+      <span className="button-label">{label}</span>
       <style jsx>{`
         button {
           background-color: ${backgroundColor};
           color: ${color};
+          display: flex;
+          align-items: center;
+          gap: 8px; /* Adjust spacing between icon and label */
+        }
+        .button-icon {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
         }
       `}</style>
     </button>

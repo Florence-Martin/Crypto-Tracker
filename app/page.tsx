@@ -88,14 +88,16 @@ const HomePage: React.FC = () => {
       <div className="flex mx-4 flex-col md:flex-row mb-6 justify-center">
         <SearchBar onSearch={handleSearch} />
       </div>
-      <div className="flex items-center gap-4 mr-4 justify-end mb-2">
-        <button
+      <div
+        id="add_crypto"
+        className="flex items-center gap-4 mr-4 justify-end mb-2"
+      >
+        <Button
+          primary
+          label="Add to Wallet"
           onClick={() => setIsWalletOpen(true)}
-          className="flex items-center gap-2 text-sm text-primary hover:text-[#75ef75] transition"
-        >
-          <BadgeDollarSign className="w-6 h-6" />
-          Add to Wallet
-        </button>
+          icon={<BadgeDollarSign />}
+        />
         <Button
           primary={view === "table"}
           label="Table"

@@ -11,12 +11,12 @@ interface PortfolioMetric {
 export default function PortfolioOverview() {
   const metrics: PortfolioMetric[] = [
     {
-      icon: <DollarSign className="w-6 h-6" />,
+      icon: <DollarSign className="w-6 h-6 text-yellow-500" />,
       label: "Total Assets",
       value: "$10,000",
     },
     {
-      icon: <TrendingUp className="w-6 h-6" />,
+      icon: <TrendingUp className="w-6 h-6 text-blue-500" />,
       label: "Total Gain/Loss",
       value: "+10%",
       className: "text-green-600",

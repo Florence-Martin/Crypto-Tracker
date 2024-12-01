@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Hero() {
   return (
     <section className="bg-gray-700 py-20 px-4">
@@ -9,7 +11,7 @@ export default function Hero() {
           Track popular cryptocurrencies and manage your portfolio seamlessly.
         </p>
         <button className="bg-black text-white px-8 py-3 rounded-lg hover:bg-gray-900 transition-colors">
-          Get Started
+          <Link href="#add_crypto">Get Started</Link>
         </button>
       </div>
     </section>
