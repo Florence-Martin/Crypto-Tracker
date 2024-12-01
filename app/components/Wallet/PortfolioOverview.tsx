@@ -24,17 +24,19 @@ export default function PortfolioOverview() {
   ];
 
   return (
-    // <div className="flex flex-col  w-full max-w-4xl p-6 justify-center items-center mr-9">
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl text-center font-bold mb-8">
         Portfolio Overview
       </h1>
-      <div className="grid grid-cols-2 gap-6 rounded-full ">
+      <div className="flex flex-col sm:flex-row justify-center items-center gap-6">
         {metrics.map((metric, index) => (
-          <Card key={index} className="p-6 border-none shadow-none">
-            <div className="flex flex-col items-center gap-4">
+          <Card
+            key={index}
+            className="w-full sm:w-auto p-6 border-none shadow-none "
+          >
+            <div className="flex flex-row sm:flex-col justify-center items-center gap-4">
               <div className="bg-gray-100 p-4 rounded-full">{metric.icon}</div>
-              <div className="space-y-1">
+              <div className="space-y-1 text-center sm:text-left">
                 <p className="text-sm text-muted-foreground">{metric.label}</p>
                 <p className={`text-2xl font-bold ${metric.className}`}>
                   {metric.value}
