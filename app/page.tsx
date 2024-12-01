@@ -92,23 +92,26 @@ const HomePage: React.FC = () => {
         id="add_crypto"
         className="flex items-center gap-4 mr-4 justify-end mb-2"
       >
-        <Button
-          primary
-          label="Add to Wallet"
+        <button
           onClick={() => setIsWalletOpen(true)}
-          icon={<BadgeDollarSign />}
-        />
+          className="relative flex items-center gap-2 text-md font-semibold text-primary transition group"
+        >
+          <BadgeDollarSign className="w-6 h-6 relative z-10" />
+          <span className="relative z-10">Add to Wallet</span>
+          <span className="absolute inset-0 -rotate-6 bg-yellow-300 scale-x-0 group-hover:scale-x-100 transition-transform origin-bottom z-0"></span>
+        </button>
+
         <Button
           primary={view === "table"}
           label="Table"
           onClick={() => setView("table")}
-          backgroundColor={view === "table" ? "#4CAF50" : "#D3D3D3"}
+          backgroundColor={view === "table" ? "#4CAF50" : "#3F3F46"}
         />
         <Button
           primary={view === "graph"}
           label="Graph"
           onClick={() => setView("graph")}
-          backgroundColor={view === "graph" ? "#4CAF50" : "#D3D3D3"}
+          backgroundColor={view === "graph" ? "#4CAF50" : "#3F3F46"}
         />
       </div>
       {isLoading ? (
