@@ -1,27 +1,33 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { DollarSign } from "lucide-react";
+import { DollarSign, Diamond, Leaf } from "lucide-react"; // Import des différentes icônes
 
 interface CryptoPriceProps {
   name: string;
   symbol: string;
   price: number;
   percentageChange: number;
-  icon?: "dollar" | "diamond" | "leaf";
+  icon: "dollar" | "diamond" | "leaf"; // Définition du type des icônes
 }
 
 export default function CryptoPriceCard({
-  name = "Bitcoin",
-  symbol = "BTC",
-  price = 57320,
-  percentageChange = 0.23,
+  name,
+  symbol,
+  price,
+  percentageChange,
+  icon,
 }: CryptoPriceProps) {
+  // Mappe les types d'icônes au composant correspondant
+  const IconComponent =
+    icon === "dollar" ? DollarSign : icon === "diamond" ? Diamond : Leaf;
+
   return (
     <Card className="w-full max-w-[240px]">
       <CardContent className="pt-6 px-6 pb-4">
         <div className="flex flex-col items-center text-center space-y-1.5">
           <div className="bg-gray-100 p-4 rounded-full">
             <div className="w-8 h-8 flex items-center justify-center">
-              <DollarSign className="w-6 h-6 text-yellow-500" />
+              {/* Icône dynamique */}
+              <IconComponent className="w-6 h-6 text-yellow-500" />
             </div>
           </div>
           <h3 className="font-medium text-lg">{name}</h3>

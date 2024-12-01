@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/card";
 import { ChartContainer } from "@/components/ui/chart";
 import { debounce } from "lodash"; //évite des recalculs fréquents
+import PortfolioOverview from "./components/Wallet/PortfolioOverview";
 
 const chartConfig = {
   current_price: {
@@ -76,37 +77,38 @@ const HomePage: React.FC = () => {
       <div className="mt-44 md:mt-36 mb-10 md:mb-6">
         {/* Section Hero */}
         <Hero />
+        <div className="grid grid-cols-1 md:grid-cols-2 border-2">
+          {/* Section Popular Cryptocurrencies */}
+          <CryptoDashboard />
 
-        {/* Section Popular Cryptocurrencies */}
-        <CryptoDashboard />
-
-        {/* Barre de recherche */}
-        <div className="flex mx-4 flex-col md:flex-row mb-6 justify-center">
-          <SearchBar onSearch={handleSearch} />
-        </div>
-        <div className="flex items-center gap-4 mr-4 justify-end">
-          <button
-            onClick={() => setIsWalletOpen(true)}
-            className="flex items-center gap-2 text-sm text-primary hover:text-[#75ef75] transition"
-          >
-            <BadgeDollarSign className="w-6 h-6" />
-            Add to Wallet
-          </button>
-          <Button
-            primary={view === "table"}
-            label="Table"
-            onClick={() => setView("table")}
-            backgroundColor={view === "table" ? "#4CAF50" : "#D3D3D3"}
-          />
-          <Button
-            primary={view === "graph"}
-            label="Graph"
-            onClick={() => setView("graph")}
-            backgroundColor={view === "graph" ? "#4CAF50" : "#D3D3D3"}
-          />
+          <PortfolioOverview />
         </div>
       </div>
-
+      {/* Barre de recherche */}
+      <div className="flex mx-4 flex-col md:flex-row mb-6 justify-center">
+        <SearchBar onSearch={handleSearch} />
+      </div>
+      <div className="flex items-center gap-4 mr-4 justify-end mb-2">
+        <button
+          onClick={() => setIsWalletOpen(true)}
+          className="flex items-center gap-2 text-sm text-primary hover:text-[#75ef75] transition"
+        >
+          <BadgeDollarSign className="w-6 h-6" />
+          Add to Wallet
+        </button>
+        <Button
+          primary={view === "table"}
+          label="Table"
+          onClick={() => setView("table")}
+          backgroundColor={view === "table" ? "#4CAF50" : "#D3D3D3"}
+        />
+        <Button
+          primary={view === "graph"}
+          label="Graph"
+          onClick={() => setView("graph")}
+          backgroundColor={view === "graph" ? "#4CAF50" : "#D3D3D3"}
+        />
+      </div>
       {isLoading ? (
         <div className="flex justify-center items-center h-full">
           <Loader />
@@ -123,64 +125,66 @@ const HomePage: React.FC = () => {
           />
         </div>
       ) : filteredCryptos.length > 1 ? (
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Cryptocurrency Prices</CardTitle>
-            <CardDescription>Real-time cryptocurrency data</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer config={chartConfig}>
-              <LineChart
-                data={filteredCryptos.map((crypto, index) => ({
-                  name: crypto.name,
-                  current_price: crypto.current_price,
-                  fill: colors[index % colors.length],
-                }))}
-                margin={{ top: 24, left: 24, right: 24, bottom: 24 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="name"
-                  tickLine={false}
-                  axisLine={false}
-                  tickMargin={10}
-                />
-                <Tooltip
-                  content={({ payload }) =>
-                    payload?.[0] ? (
-                      <div className="p-2 bg-gray-800 text-white rounded">
-                        <p>{payload[0].payload.name}</p>
-                        <p>${payload[0].payload.current_price.toFixed(2)}</p>
-                      </div>
-                    ) : null
-                  }
-                />
-                <Line
-                  dataKey="current_price"
-                  type="monotone"
-                  stroke="hsl(var(--chart-2))"
-                  strokeWidth={2}
-                  dot={({ cx, cy, payload }) => (
-                    <Dot
-                      key={`dot-${payload.name}`}
-                      cx={cx}
-                      cy={cy}
-                      r={5}
-                      fill={payload.fill}
-                      stroke={payload.fill}
-                    />
-                  )}
-                />
-              </LineChart>
-            </ChartContainer>
-          </CardContent>
-          <CardFooter className="flex-col items-start gap-2 text-sm">
-            <div className="font-medium">Real-time updates</div>
-            <div className="text-muted-foreground">
-              Data fetched from your context.
-            </div>
-          </CardFooter>
-        </Card>
+        <div className="mx-4">
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle>Cryptocurrency Prices</CardTitle>
+              <CardDescription>Real-time cryptocurrency data</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={chartConfig}>
+                <LineChart
+                  data={filteredCryptos.map((crypto, index) => ({
+                    name: crypto.name,
+                    current_price: crypto.current_price,
+                    fill: colors[index % colors.length],
+                  }))}
+                  margin={{ top: 24, left: 24, right: 24, bottom: 24 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="name"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={10}
+                  />
+                  <Tooltip
+                    content={({ payload }) =>
+                      payload?.[0] ? (
+                        <div className="p-2 bg-gray-800 text-white rounded">
+                          <p>{payload[0].payload.name}</p>
+                          <p>${payload[0].payload.current_price.toFixed(2)}</p>
+                        </div>
+                      ) : null
+                    }
+                  />
+                  <Line
+                    dataKey="current_price"
+                    type="monotone"
+                    stroke="hsl(var(--chart-2))"
+                    strokeWidth={2}
+                    dot={({ cx, cy, payload }) => (
+                      <Dot
+                        key={`dot-${payload.name}`}
+                        cx={cx}
+                        cy={cy}
+                        r={5}
+                        fill={payload.fill}
+                        stroke={payload.fill}
+                      />
+                    )}
+                  />
+                </LineChart>
+              </ChartContainer>
+            </CardContent>
+            <CardFooter className="flex-col items-start gap-2 text-sm">
+              <div className="font-medium">Real-time updates</div>
+              <div className="text-muted-foreground">
+                Data fetched from your context.
+              </div>
+            </CardFooter>
+          </Card>
+        </div>
       ) : (
         <p className="text-center text-muted-foreground">
           Not enough data to display the graph.
