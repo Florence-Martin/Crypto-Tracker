@@ -23,6 +23,7 @@ import {
 import { ChartContainer } from "@/components/ui/chart";
 import { debounce } from "lodash"; //évite des recalculs fréquents
 import PortfolioOverview from "./components/Wallet/PortfolioOverview";
+import CryptoAlert from "./components/CryptoAlert/CryptoAlert";
 
 const chartConfig = {
   current_price: {
@@ -45,6 +46,22 @@ const HomePage: React.FC = () => {
   const [filteredCryptos, setFilteredCryptos] = useState(cryptos || []);
   const [isWalletOpen, setIsWalletOpen] = useState(false);
   const [view, setView] = useState<"table" | "graph">("table");
+
+  // Alerts
+  const alerts = [
+    {
+      id: "1",
+      type: "Bitcoin",
+      message: "Bitcoin price increased by 10%.",
+      timestamp: new Date(),
+    },
+    {
+      id: "2",
+      type: "Ethereum",
+      message: "Ethereum price decreased by 5%.",
+      timestamp: new Date(),
+    },
+  ];
 
   useEffect(() => {
     if (cryptos && cryptos.length > 0) {
@@ -195,7 +212,7 @@ const HomePage: React.FC = () => {
           Not enough data to display the graph.
         </p>
       )}
-
+      <CryptoAlert alerts={alerts} />
       {isWalletOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
           <div className="relative bg-background text-foreground rounded-lg p-6 shadow-lg max-w-lg w-full">
