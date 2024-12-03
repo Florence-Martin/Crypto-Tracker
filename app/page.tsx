@@ -21,7 +21,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ChartContainer } from "@/components/ui/chart";
-import { debounce } from "lodash"; //évite des recalculs fréquents
+// import { debounce } from "lodash";
+import debounce from "lodash/debounce";
 import PortfolioOverview from "./components/Wallet/PortfolioOverview";
 import CryptoAlert from "./components/CryptoAlert/CryptoAlert";
 
@@ -39,48 +40,54 @@ const colors = [
 ];
 
 const HomePage: React.FC = () => {
-  const { cryptos, isLoading, error } = useCrypto(); // Récupère les cryptos
-  // console.log("Cryptos from context:", cryptos);
-  const { addToPortfolio } = usePortfolio(); // Ajoute les cryptos au portefeuille
+  const { cryptos, isLoading, error } = useCrypto();
+  const { addToPortfolio } = usePortfolio();
 
   const [filteredCryptos, setFilteredCryptos] = useState(cryptos || []);
   const [isWalletOpen, setIsWalletOpen] = useState(false);
   const [view, setView] = useState<"table" | "graph">("table");
-
-  // Alerts
-  const alerts = [
-    {
-      id: "1",
-      type: "Bitcoin",
-      message: "Bitcoin price increased by 10%.",
-      timestamp: new Date(),
-    },
-    {
-      id: "2",
-      type: "Ethereum",
-      message: "Ethereum price decreased by 5%.",
-      timestamp: new Date(),
-    },
-  ];
+  const [alerts, setAlerts] = useState<string[]>([]);
 
   useEffect(() => {
     if (cryptos && cryptos.length > 0) {
-      setFilteredCryptos(cryptos); // Initialise les cryptos affichées
+      console.log("Crypto loaded", cryptos);
+      setFilteredCryptos(cryptos);
     }
   }, [cryptos]);
 
-  if (isLoading)
+  useEffect(() => {
+    async function fetchAlerts() {
+      try {
+        const response = await fetch("/api/alert?userId=12345"); // Ajoutez le userId du user identifié
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const result = await response.json();
+        // console.log("API response:", result);
+        setAlerts(result.data.map((alert: { symbol: string }) => alert.symbol));
+      } catch (error) {
+        console.error("Failed to fetch alerts:", error);
+      }
+    }
+
+    fetchAlerts();
+  }, []);
+
+  if (isLoading) {
     return (
       <div className="flex justify-center items-center">
         <Loader />
       </div>
     );
-  if (error)
+  }
+
+  if (error) {
     return (
       <div>
         <p>{error}</p>
       </div>
     );
+  }
 
   const handleSearch = debounce((searchTerm: string) => {
     const filtered = cryptos.filter((crypto) =>
@@ -89,11 +96,33 @@ const HomePage: React.FC = () => {
     setFilteredCryptos(filtered);
   }, 300);
 
+  // Transformer les alertes sélectionnées pour le composant CryptoAlert
+  const alertDetails =
+    alerts.length > 0
+      ? alerts.map((symbol) => {
+          const crypto = cryptos.find((crypto) => crypto.symbol === symbol);
+          return {
+            id: crypto?.symbol || "",
+            type: crypto?.name || "",
+            message: `${crypto?.name || "Unknown"} price alert active.`,
+            timestamp: new Date(),
+          };
+        })
+      : [
+          {
+            id: "no-alert",
+            type: "No Alerts",
+            message: "You have not selected any alerts.",
+            timestamp: new Date(),
+          },
+        ];
+
   return (
     <main className="relative w-screen min-h-screen bg-background overflow-auto mb-24">
       <div className="mt-44 md:mt-36 mb-10 md:mb-6">
         {/* Section Hero */}
         <Hero />
+
         <div className="grid grid-cols-1 md:grid-cols-2 border-2">
           {/* Section Popular Cryptocurrencies */}
           <CryptoDashboard />
@@ -144,6 +173,12 @@ const HomePage: React.FC = () => {
               price: crypto.current_price,
               priceChange: crypto.price_change_percentage_24h,
             }))}
+            selectedAlerts={alerts} // Passe l'état comme prop
+            onAlertChange={(updatedAlerts) => {
+              setTimeout(() => {
+                setAlerts(updatedAlerts); // Met à jour les alertes sélectionnées sans déclencher de rendu immédiat
+              }, 0);
+            }}
           />
         </div>
       ) : filteredCryptos.length > 1 ? (
@@ -212,7 +247,10 @@ const HomePage: React.FC = () => {
           Not enough data to display the graph.
         </p>
       )}
-      <CryptoAlert alerts={alerts} />
+
+      {/* Alertes */}
+      <CryptoAlert alerts={alertDetails} />
+
       {isWalletOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
           <div className="relative bg-background text-foreground rounded-lg p-6 shadow-lg max-w-lg w-full">
