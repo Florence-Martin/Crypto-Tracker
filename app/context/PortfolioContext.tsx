@@ -8,7 +8,7 @@ interface Crypto {
   name: string;
   symbol: string;
   current_price: number;
-  price_change_percentage_24h: number;
+  price_change_percentage_24h?: number;
   quantity?: number; // Propriété optionnelle pour la quantité
   priceHistory?: { date: string; price: number }[]; // Propriété optionnelle pour l'historique des prix
 }
@@ -77,7 +77,16 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({
   /**
    * Ajoute une cryptomonnaie au portefeuille
    */
-  const addToPortfolio = async (crypto: Crypto, quantity: number) => {
+  const addToPortfolio = async (
+    crypto: {
+      id: string;
+      name: string;
+      symbol: string;
+      current_price: number;
+      price_change_percentage_24h?: number;
+    },
+    quantity: number
+  ) => {
     if (!crypto || quantity <= 0) {
       console.error("Invalid crypto data or quantity provided.");
       return;
@@ -90,7 +99,6 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({
       name: crypto.name,
       symbol: crypto.symbol,
       quantity,
-      price_change_percentage_24h: crypto.price_change_percentage_24h,
       totalValue: parseFloat((quantity * crypto.current_price).toFixed(2)), // Calcul correct de totalValue
       priceHistory: [{ date: currentDate, price: crypto.current_price }], // Historique valide
     };
@@ -100,8 +108,6 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({
       cryptos: [newCrypto],
     };
 
-    // console.log("Data to send:", portfolioData);
-
     try {
       const response = await fetch("/api/portfolio", {
         method: "POST",
@@ -109,12 +115,13 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({
         body: JSON.stringify(portfolioData),
       });
 
-      const data = await response.json();
-
-      if (data.success) {
+      if (response.ok) {
         await loadPortfolio(); // Recharge les données après ajout
       } else {
-        console.error("Erreur lors de l'ajout au backend :", data.error);
+        console.error(
+          "Erreur lors de l'ajout au backend :",
+          response.statusText
+        );
       }
     } catch (error) {
       console.error(

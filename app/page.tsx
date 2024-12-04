@@ -1,8 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Wallet from "./components/Wallet/Wallet";
-import { Table } from "./components/Table/Table";
 import { SearchBar } from "./components/Searchbar/SearchBar";
 import { useCrypto } from "../app/context/CryptoContext";
 import { usePortfolio } from "../app/context/PortfolioContext";
@@ -11,33 +9,19 @@ import Hero from "./components/Hero/Hero";
 import { CryptoDashboard } from "./components/Crypto/CryptoDashboard";
 import { BadgeDollarSign } from "lucide-react";
 import { Button } from "@/design-system";
-import { LineChart, Line, CartesianGrid, Dot, XAxis, Tooltip } from "recharts";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ChartContainer } from "@/components/ui/chart";
-// import { debounce } from "lodash";
 import debounce from "lodash/debounce";
 import PortfolioOverview from "./components/Wallet/PortfolioOverview";
 import CryptoAlert from "./components/CryptoAlert/CryptoAlert";
-
-const chartConfig = {
-  current_price: {
-    label: "Current Price",
-    color: "hsl(var(--chart-2))",
-  },
-};
-
-const colors = [
-  "hsl(var(--chart-1))",
-  "hsl(var(--chart-2))",
-  "hsl(var(--chart-3))",
-];
+import { CryptoTable } from "./components/Table/Cryptotable";
+import { CryptoGraph } from "./components/Graph/CryptoGraph";
+import { WalletModal } from "./components/Wallet/WalletModal";
 
 const HomePage: React.FC = () => {
   const { cryptos, isLoading, error } = useCrypto();
@@ -55,10 +39,6 @@ const HomePage: React.FC = () => {
       setFilteredCryptos(cryptos);
     }
   }, [cryptos]);
-
-  const handleAlertChange = (updatedAlerts: typeof alerts) => {
-    setAlerts(updatedAlerts);
-  };
 
   const handleSearch = debounce((searchTerm: string) => {
     const filtered = cryptos.filter((crypto) =>
@@ -109,6 +89,7 @@ const HomePage: React.FC = () => {
           {/* Section Popular Cryptocurrencies */}
           <CryptoDashboard />
 
+          {/* Section Portfolio Overview */}
           <PortfolioOverview />
         </div>
       </div>
@@ -148,15 +129,14 @@ const HomePage: React.FC = () => {
         </div>
       ) : view === "table" ? (
         <div className="mx-4">
-          <Table
-            data={filteredCryptos.map((crypto) => ({
-              name: crypto.name,
-              symbol: crypto.symbol,
+          <CryptoTable
+            cryptos={filteredCryptos.map((crypto) => ({
+              ...crypto,
               price: crypto.current_price,
               priceChange: crypto.price_change_percentage_24h,
             }))}
-            selectedAlerts={alerts} // Liste des objets crypto sélectionnés
-            onAlertChange={setAlerts} // Met à jour les alertes
+            alerts={alerts}
+            onAlertChange={setAlerts}
           />
         </div>
       ) : filteredCryptos.length > 1 ? (
@@ -166,58 +146,21 @@ const HomePage: React.FC = () => {
               <CardTitle>Cryptocurrency Prices</CardTitle>
               <CardDescription>Real-time cryptocurrency data</CardDescription>
             </CardHeader>
-            <CardContent>
-              <ChartContainer config={chartConfig}>
-                <LineChart
-                  data={filteredCryptos.map((crypto, index) => ({
-                    key: `${crypto.name}-${index}`,
-                    name: crypto.name,
-                    current_price: crypto.current_price,
-                    fill: colors[index % colors.length],
-                  }))}
-                  margin={{ top: 24, left: 24, right: 24, bottom: 24 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis
-                    dataKey="name"
-                    tickLine={false}
-                    axisLine={false}
-                    tickMargin={10}
-                  />
-                  <Tooltip
-                    content={({ payload }) =>
-                      payload?.[0] ? (
-                        <div className="p-2 bg-gray-800 text-white rounded">
-                          <p>{payload[0].payload.name}</p>
-                          <p>${payload[0].payload.current_price.toFixed(2)}</p>
-                        </div>
-                      ) : null
-                    }
-                  />
-                  <Line
-                    dataKey="current_price"
-                    type="monotone"
-                    stroke="hsl(var(--chart-2))"
-                    strokeWidth={2}
-                    dot={({ cx, cy, payload }) => (
-                      <Dot
-                        key={`dot-${payload.name}`}
-                        cx={cx}
-                        cy={cy}
-                        r={5}
-                        fill={payload.fill}
-                        stroke={payload.fill}
-                      />
-                    )}
-                  />
-                </LineChart>
-              </ChartContainer>
-            </CardContent>
+            <CryptoGraph
+              data={filteredCryptos.map((crypto, index) => ({
+                name: crypto.name,
+                current_price: crypto.current_price,
+                fill: `hsl(var(--chart-${(index % 3) + 1}))`,
+              }))}
+              chartConfig={{
+                current_price: {
+                  label: "Current Price",
+                  color: "hsl(var(--chart-2))",
+                },
+              }}
+            />
             <CardFooter className="flex-col items-start gap-2 text-sm">
               <div className="font-medium">Real-time updates</div>
-              <div className="text-muted-foreground">
-                Data fetched from your context.
-              </div>
             </CardFooter>
           </Card>
         </div>
@@ -230,24 +173,23 @@ const HomePage: React.FC = () => {
       {/* Alertes */}
       <CryptoAlert alerts={alertDetails} />
 
+      {/* Modal Wallet */}
       {isWalletOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-          <div className="relative bg-background text-foreground rounded-lg p-6 shadow-lg max-w-lg w-full">
-            <button
-              className="absolute top-2 right-2 text-foreground hover:text-primary"
-              onClick={() => setIsWalletOpen(false)}
-            >
-              ✕
-            </button>
-            <Wallet
-              cryptos={filteredCryptos}
-              onAddToPortfolio={(crypto, quantity) => {
-                addToPortfolio(crypto, quantity);
-                setIsWalletOpen(false);
-              }}
-            />
-          </div>
-        </div>
+        <WalletModal
+          onClose={() => setIsWalletOpen(false)}
+          cryptos={filteredCryptos.map((crypto) => ({
+            id: crypto.id,
+            name: crypto.name,
+            symbol: crypto.symbol,
+            current_price: crypto.current_price,
+            price_change_percentage_24h:
+              crypto.price_change_percentage_24h || 0,
+          }))}
+          addToPortfolio={(crypto, quantity) => {
+            addToPortfolio(crypto, quantity);
+            setIsWalletOpen(false);
+          }}
+        />
       )}
     </main>
   );
