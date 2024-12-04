@@ -46,32 +46,43 @@ const HomePage: React.FC = () => {
   const [filteredCryptos, setFilteredCryptos] = useState(cryptos || []);
   const [isWalletOpen, setIsWalletOpen] = useState(false);
   const [view, setView] = useState<"table" | "graph">("table");
-  const [alerts, setAlerts] = useState<string[]>([]);
+  const [alerts, setAlerts] = useState<
+    { name: string; symbol: string; price: number; priceChange: number }[]
+  >([]);
 
   useEffect(() => {
     if (cryptos && cryptos.length > 0) {
-      console.log("Crypto loaded", cryptos);
       setFilteredCryptos(cryptos);
     }
   }, [cryptos]);
 
-  useEffect(() => {
-    async function fetchAlerts() {
-      try {
-        const response = await fetch("/api/alert?userId=12345"); // Ajoutez le userId du user identifié
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const result = await response.json();
-        // console.log("API response:", result);
-        setAlerts(result.data.map((alert: { symbol: string }) => alert.symbol));
-      } catch (error) {
-        console.error("Failed to fetch alerts:", error);
-      }
-    }
+  const handleAlertChange = (updatedAlerts: typeof alerts) => {
+    setAlerts(updatedAlerts);
+  };
 
-    fetchAlerts();
-  }, []);
+  const handleSearch = debounce((searchTerm: string) => {
+    const filtered = cryptos.filter((crypto) =>
+      crypto.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredCryptos(filtered);
+  }, 300);
+
+  const alertDetails =
+    alerts.length > 0
+      ? alerts.map((alert, index) => ({
+          id: `${alert.symbol}-${index}`,
+          type: alert.name,
+          message: `${alert.name} is being tracked.`,
+          timestamp: new Date(),
+        }))
+      : [
+          {
+            id: "no-alert",
+            type: "No Alerts",
+            message: "You have not selected any alerts.",
+            timestamp: new Date(),
+          },
+        ];
 
   if (isLoading) {
     return (
@@ -88,35 +99,6 @@ const HomePage: React.FC = () => {
       </div>
     );
   }
-
-  const handleSearch = debounce((searchTerm: string) => {
-    const filtered = cryptos.filter((crypto) =>
-      crypto.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredCryptos(filtered);
-  }, 300);
-
-  // Transformer les alertes sélectionnées pour le composant CryptoAlert
-  const alertDetails =
-    alerts.length > 0
-      ? alerts.map((symbol) => {
-          const crypto = cryptos.find((crypto) => crypto.symbol === symbol);
-          return {
-            id: crypto?.symbol || "",
-            type: crypto?.name || "",
-            message: `${crypto?.name || "Unknown"} price alert active.`,
-            timestamp: new Date(),
-          };
-        })
-      : [
-          {
-            id: "no-alert",
-            type: "No Alerts",
-            message: "You have not selected any alerts.",
-            timestamp: new Date(),
-          },
-        ];
-
   return (
     <main className="relative w-screen min-h-screen bg-background overflow-auto mb-24">
       <div className="mt-44 md:mt-36 mb-10 md:mb-6">
@@ -173,12 +155,8 @@ const HomePage: React.FC = () => {
               price: crypto.current_price,
               priceChange: crypto.price_change_percentage_24h,
             }))}
-            selectedAlerts={alerts} // Passe l'état comme prop
-            onAlertChange={(updatedAlerts) => {
-              setTimeout(() => {
-                setAlerts(updatedAlerts); // Met à jour les alertes sélectionnées sans déclencher de rendu immédiat
-              }, 0);
-            }}
+            selectedAlerts={alerts} // Liste des objets crypto sélectionnés
+            onAlertChange={setAlerts} // Met à jour les alertes
           />
         </div>
       ) : filteredCryptos.length > 1 ? (
@@ -192,6 +170,7 @@ const HomePage: React.FC = () => {
               <ChartContainer config={chartConfig}>
                 <LineChart
                   data={filteredCryptos.map((crypto, index) => ({
+                    key: `${crypto.name}-${index}`,
                     name: crypto.name,
                     current_price: crypto.current_price,
                     fill: colors[index % colors.length],

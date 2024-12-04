@@ -18,6 +18,7 @@ export const Card: React.FC<CardProps> = ({
   totalValue = "0.00",
   priceChange = 0,
 }) => {
+  const formattedPriceChange = `${priceChange > 0 ? "+" : ""}${priceChange}%`;
   return (
     <div className="crypto-card">
       <h3>
@@ -28,8 +29,9 @@ export const Card: React.FC<CardProps> = ({
         <p>Quantity: {quantity}</p>
         <p>Total Value: ${totalValue}</p>
         <p className={priceChange >= 0 ? "positive" : "negative"}>
-          {priceChange >= 0 ? "+" : ""}
-          {priceChange.toFixed(2)}%
+          {/* {priceChange >= 0 ? "+" : ""}
+          {priceChange.toFixed(2)}% */}
+          {formattedPriceChange}
         </p>
       </div>
     </div>

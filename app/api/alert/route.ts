@@ -3,15 +3,26 @@ import { NextResponse } from "next/server";
 import Joi from "joi";
 import Alert from "@/lib/models/Alert";
 
+interface AlertType {
+  name: string;
+  symbol: string;
+  price: number;
+  priceChange: number;
+  timestamp: Date;
+}
+
 // Définition du schéma de validation pour les alertes
+
 export const alertSchema = Joi.object({
-  userId: Joi.string().required(),
+  userId: Joi.string().required(), // ID utilisateur requis
   alerts: Joi.array()
     .items(
       Joi.object({
-        symbol: Joi.string().optional(),
-        message: Joi.string().required(),
-        timestamp: Joi.date().required(),
+        name: Joi.string().required(), // Nom de la crypto requis
+        symbol: Joi.string().required(), // Symbole requis
+        price: Joi.number().required(), // Prix requis
+        priceChange: Joi.number().required(), // Variation en pourcentage
+        timestamp: Joi.date().required(), // Timestamp requis
       })
     )
     .required(),
@@ -23,7 +34,7 @@ export async function GET(req: Request) {
     await dbConnect();
 
     const url = new URL(req.url);
-    const userId = url.searchParams.get("userId");
+    const userId: string | null = url.searchParams.get("userId");
 
     if (!userId) {
       return NextResponse.json(
@@ -32,15 +43,26 @@ export async function GET(req: Request) {
       );
     }
 
-    const alerts = await Alert.find({ userId }).select(
-      "symbol message timestamp"
+    const userAlerts = await Alert.findOne({ userId });
+
+    if (!userAlerts || userAlerts.alerts.length === 0) {
+      return NextResponse.json({ success: true, data: [] });
+    }
+
+    // Supprimer les doublons
+    const uniqueAlerts: AlertType[] = userAlerts.alerts.reduce(
+      (acc: AlertType[], alert: AlertType) => {
+        if (!acc.some((a: AlertType) => a.symbol === alert.symbol)) {
+          acc.push(alert);
+        }
+        return acc;
+      },
+      []
     );
 
-    return NextResponse.json({
-      success: true,
-      data: alerts,
-    });
+    return NextResponse.json({ success: true, data: uniqueAlerts });
   } catch (error) {
+    console.error(error);
     return NextResponse.json(
       { success: false, error: (error as Error).message },
       { status: 500 }
@@ -53,35 +75,39 @@ export async function POST(req: Request) {
   try {
     await dbConnect();
 
-    const body = await req.json();
-    console.log("Received body:", JSON.stringify(body, null, 2));
+    const body: { userId: string; alerts: AlertType[] } = await req.json(); // Typage des données reçues
 
-    // Valider les données avec Joi
-    const { error } = alertSchema.validate(body);
+    const { userId, alerts } = body;
 
-    if (error) {
-      console.error("Validation error:", error.details[0].message);
+    if (!userId || !Array.isArray(alerts)) {
       return NextResponse.json(
-        { success: false, error: error.details[0].message },
+        { success: false, error: "Invalid request data" },
         { status: 400 }
       );
     }
 
-    // Préparez les données à insérer dans MongoDB
-    const alertsToInsert = body.alerts.map(
-      (alert: { symbol?: string; message: string; timestamp: Date }) => ({
-        userId: body.userId, // Ajoute le userId à chaque alerte
-        ...alert, // Inclut symbol, message et timestamp
-      })
-    );
+    let userAlerts = await Alert.findOne({ userId });
+    if (!userAlerts) {
+      userAlerts = new Alert({ userId, alerts: [] });
+    }
 
-    // Insérez toutes les alertes d'un coup
-    const newAlerts = await Alert.insertMany(alertsToInsert);
+    // Ajouter ou mettre à jour les alertes
+    alerts.forEach((newAlert: AlertType) => {
+      const existingAlertIndex = userAlerts.alerts.findIndex(
+        (alert: AlertType) => alert.symbol === newAlert.symbol
+      );
+      if (existingAlertIndex !== -1) {
+        userAlerts.alerts[existingAlertIndex] = newAlert;
+      } else {
+        userAlerts.alerts.push(newAlert);
+      }
+    });
 
-    console.log("Alerts created:", newAlerts);
-    return NextResponse.json({ success: true, data: newAlerts });
+    await userAlerts.save();
+
+    return NextResponse.json({ success: true, data: userAlerts });
   } catch (err) {
-    console.error("Error creating alert:", (err as Error).message);
+    console.error(err);
     return NextResponse.json(
       { success: false, error: (err as Error).message },
       { status: 500 }
@@ -105,17 +131,30 @@ export async function DELETE(req: Request) {
       );
     }
 
-    const deletedAlert = await Alert.findOneAndDelete({ userId, symbol });
+    // Récupérer les alertes de l'utilisateur
+    const userAlerts = await Alert.findOne({ userId });
 
-    if (!deletedAlert) {
+    if (!userAlerts || !userAlerts.alerts) {
       return NextResponse.json(
-        { success: false, error: "Alert not found" },
+        { success: false, error: "User or alerts not found." },
         { status: 404 }
       );
     }
 
-    return NextResponse.json({ success: true, data: deletedAlert });
+    // Filtrer les alertes pour supprimer celle correspondant au symbole
+    userAlerts.alerts = userAlerts.alerts.filter(
+      (alert: { symbol: string }) => alert.symbol !== symbol
+    );
+
+    // Sauvegarder les modifications
+    await userAlerts.save();
+
+    return NextResponse.json({
+      success: true,
+      data: userAlerts.alerts, // Retourner les alertes restantes
+    });
   } catch (error) {
+    console.error("Error during DELETE:", error);
     return NextResponse.json(
       { success: false, error: (error as Error).message },
       { status: 500 }

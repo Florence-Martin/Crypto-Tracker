@@ -13,14 +13,15 @@ interface CryptoAlertsProps {
 }
 
 export default function CryptoAlert({ alerts }: CryptoAlertsProps) {
+  console.log("Alerts in CryptoAlert component:", alerts);
   return (
     <div className="w-full max-w-3xl mx-auto p-4 md:p-6">
       <h1 className="text-3xl font-bold mb-6">Recent Alerts</h1>
       <div className="space-y-4">
         {alerts.length > 0 ? (
-          alerts.map((alert) => (
+          alerts.map((alert, index) => (
             <Card
-              key={alert.id}
+              key={`${alert.id}-${index}`}
               className="p-4 hover:shadow-lg transition-shadow"
             >
               <div className="flex items-center gap-4">

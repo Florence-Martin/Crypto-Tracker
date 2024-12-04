@@ -1,3 +1,5 @@
+import { usePortfolio } from "@/app/context/PortfolioContext";
+import { useCrypto } from "@/app/context/CryptoContext";
 import { Card } from "@/components/ui/card";
 import { DollarSign, TrendingUp } from "lucide-react";
 
@@ -9,17 +11,89 @@ interface PortfolioMetric {
 }
 
 export default function PortfolioOverview() {
+  const { portfolio } = usePortfolio();
+  const { cryptos } = useCrypto();
+
+  // Regrouper les cryptos identiques dans le portefeuille
+  const groupedPortfolio = portfolio.reduce(
+    (
+      accumulator: {
+        [key: string]: {
+          quantity: number;
+          total_value: number;
+          current_price: number;
+          id: string;
+        };
+      },
+      item
+    ) => {
+      if (accumulator[item.id]) {
+        accumulator[item.id].quantity += item.quantity;
+        accumulator[item.id].total_value += item.quantity * item.current_price;
+      } else {
+        accumulator[item.id] = {
+          ...item,
+          total_value: item.quantity * item.current_price,
+        };
+      }
+      return accumulator;
+    },
+    {}
+  );
+
+  // Transformer l'objet regroupé en tableau
+  const portfolioArray = Object.values(groupedPortfolio);
+
+  // Calculer la valeur actuelle et les gains/pertes pour chaque crypto
+  const updatedPortfolio = portfolioArray.map((item) => {
+    const matchingCrypto = cryptos.find((crypto) => crypto.id === item.id);
+
+    const currentPrice = matchingCrypto?.current_price || item.current_price;
+    const priceChange = matchingCrypto?.price_change_percentage_24h || 0;
+
+    return {
+      ...item,
+      current_price: currentPrice,
+      total_value: item.quantity * currentPrice,
+      priceChange: parseFloat(priceChange.toFixed(2)), // Utilisation directe de `price_change_percentage_24h`
+      gainLossValue:
+        item.quantity * (currentPrice - item.total_value / item.quantity),
+    };
+  });
+
+  // Calculer la valeur totale du portefeuille
+  const totalValue = updatedPortfolio.reduce(
+    (acc, item) => acc + item.total_value,
+    0
+  );
+
+  // Calculer les gains/pertes totaux en valeur monétaire
+  const totalGainLossValue = updatedPortfolio.reduce(
+    (acc, item) => acc + item.gainLossValue,
+    0
+  );
+
+  // Calculer les gains/pertes totaux en pourcentage
+  const initialTotalValue = updatedPortfolio.reduce(
+    (acc, item) => acc + item.total_value / (1 + item.priceChange / 100),
+    0
+  );
+
+  const totalGainLoss =
+    initialTotalValue > 0 ? (totalGainLossValue / initialTotalValue) * 100 : 0;
+
+  // Définir les métriques pour l'affichage
   const metrics: PortfolioMetric[] = [
     {
       icon: <DollarSign className="w-6 h-6 text-yellow-500" />,
       label: "Total Assets",
-      value: "$10,000",
+      value: `$${totalValue.toFixed(2)}`,
     },
     {
       icon: <TrendingUp className="w-6 h-6 text-blue-500" />,
       label: "Total Gain/Loss",
-      value: "+10%",
-      className: "text-green-600",
+      value: `${totalGainLoss > 0 ? "+" : ""}${totalGainLoss.toFixed(2)}%`,
+      className: totalGainLoss >= 0 ? "text-green-600" : "text-red-600",
     },
   ];
 

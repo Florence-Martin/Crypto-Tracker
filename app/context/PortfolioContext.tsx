@@ -19,6 +19,7 @@ interface PortfolioItem {
   symbol: string;
   quantity: number;
   current_price: number;
+  price_change_percentage_24h: number;
   total_value: number;
   priceHistory: { date: string; price: number }[];
 }
@@ -57,6 +58,8 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({
               symbol: crypto.symbol,
               quantity: crypto.quantity || 0,
               current_price: crypto.current_price || 0,
+              price_change_percentage_24h:
+                crypto.price_change_percentage_24h || 0,
               total_value: (crypto.quantity || 0) * (crypto.current_price || 0),
               priceHistory: crypto.priceHistory || [],
             }))
@@ -87,6 +90,7 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({
       name: crypto.name,
       symbol: crypto.symbol,
       quantity,
+      price_change_percentage_24h: crypto.price_change_percentage_24h,
       totalValue: parseFloat((quantity * crypto.current_price).toFixed(2)), // Calcul correct de totalValue
       priceHistory: [{ date: currentDate, price: crypto.current_price }], // Historique valide
     };
@@ -96,7 +100,7 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({
       cryptos: [newCrypto],
     };
 
-    console.log("Data to send:", portfolioData);
+    // console.log("Data to send:", portfolioData);
 
     try {
       const response = await fetch("/api/portfolio", {

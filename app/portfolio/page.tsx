@@ -18,17 +18,17 @@ const PortfolioPage = () => {
     );
   }
 
-  // Regroupe les cryptos identiques dans le portefeuille
+  // Regroupe les cryptos identiques dans le portefeuille pour éviter les doublons
   const groupedPortfolio = portfolio.reduce<
     Record<string, (typeof portfolio)[0]>
-  >((acc, item) => {
-    if (acc[item.id]) {
-      acc[item.id].quantity += item.quantity;
-      acc[item.id].total_value += item.total_value;
+  >((accumulator, item) => {
+    if (accumulator[item.id]) {
+      accumulator[item.id].quantity += item.quantity;
+      accumulator[item.id].total_value += item.total_value;
     } else {
-      acc[item.id] = { ...item }; // Ajoute un nouvel élément si non existant
+      accumulator[item.id] = { ...item }; // Ajoute un nouvel élément si non existant
     }
-    return acc;
+    return accumulator;
   }, {});
 
   // Transforme l'objet regroupé en tableau
@@ -38,32 +38,39 @@ const PortfolioPage = () => {
   const updatedPortfolio = portfolioArray.map((item) => {
     const matchingCrypto = cryptos.find((crypto) => crypto.id === item.id);
 
-    const currentPrice = matchingCrypto?.current_price || 0;
-    const averagePrice =
-      item.quantity > 0 ? item.total_value / item.quantity : 0;
-
-    const priceChange =
-      averagePrice > 0
-        ? ((currentPrice - averagePrice) / averagePrice) * 100
-        : 0;
-
-    // Logs pour débogage
-    // console.log("Crypto:", item.name);
-    // console.log("Current Price:", currentPrice);
-    // console.log("Average Price:", averagePrice);
-    // console.log("Price Change (%):", priceChange);
-
     return {
       ...item,
-      current_price: currentPrice,
-      total_value: item.quantity * currentPrice,
-      priceChange: parseFloat(priceChange.toFixed(2)),
+      current_price: matchingCrypto?.current_price || item.current_price,
+      total_value:
+        item.quantity * (matchingCrypto?.current_price || item.current_price),
+      priceChange:
+        matchingCrypto?.price_change_percentage_24h ||
+        item.price_change_percentage_24h,
     };
   });
+  // const updatedPortfolio = portfolioArray.map((item) => {
+  //   const matchingCrypto = cryptos.find((crypto) => crypto.id === item.id);
+
+  //   const currentPrice = matchingCrypto?.current_price || 0;
+  //   const averagePrice =
+  //     item.quantity > 0 ? item.total_value / item.quantity : 0;
+
+  //   const priceChange =
+  //     averagePrice > 0
+  //       ? ((currentPrice - averagePrice) / averagePrice) * 100
+  //       : 0;
+
+  //   return {
+  //     ...item,
+  //     current_price: currentPrice,
+  //     total_value: item.quantity * currentPrice,
+  //     priceChange: parseFloat(priceChange.toFixed(2)), // Toujours un nombre
+  //   };
+  // });
 
   // Calcul de la valeur totale du portefeuille
   const totalPortfolioValue = updatedPortfolio.reduce(
-    (acc, item) => acc + item.total_value,
+    (accumulator, item) => accumulator + item.total_value,
     0
   );
 
@@ -81,9 +88,9 @@ const PortfolioPage = () => {
       ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 text-gray-800">
-            {updatedPortfolio.map((item) => (
+            {updatedPortfolio.map((item, index) => (
               <Card
-                key={item.id}
+                key={`${item.id}-${index}`}
                 name={item.name || "Unknown"}
                 symbol={item.symbol || ""}
                 price={item.current_price}
