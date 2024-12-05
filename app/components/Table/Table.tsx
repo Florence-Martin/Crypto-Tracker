@@ -1,20 +1,26 @@
+import React, { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { IconToast } from "@/design-system";
 import { CheckCircle } from "lucide-react";
-import React, { useState } from "react";
+import {
+  addAlertToDatabase,
+  removeAlertFromDatabase,
+} from "@/services/alertsService";
 
 export interface CryptoData {
   name: string;
   symbol: string;
   price: number;
   priceChange: number;
+  current_price?: number;
+  price_change_percentage_24h?: number;
   alert?: boolean;
 }
 
 export interface TableProps {
-  data: CryptoData[]; // Liste des cryptos dans le tableau
-  selectedAlerts: CryptoData[]; // Liste des objets crypto sélectionnés
-  onAlertChange: (updatedAlerts: CryptoData[]) => void; // Callback pour remonter les alertes
+  data: CryptoData[];
+  selectedAlerts: CryptoData[];
+  onAlertChange: (updatedAlerts: CryptoData[]) => void;
 }
 
 export const Table: React.FC<TableProps> = ({
@@ -24,78 +30,55 @@ export const Table: React.FC<TableProps> = ({
 }) => {
   const [showToast, setShowToast] = useState(false);
 
+  const userId = "12345"; // À remplacer par l'ID utilisateur réel
+
   function onAlertToggle(symbol: string) {
+    // Recherche la crypto-monnaie correspondante dans les données
+    const crypto = data.find((crypto) => crypto.symbol === symbol);
+    if (!crypto) {
+      console.error(`Crypto with symbol "${symbol}" not found.`);
+      return;
+    }
+
+    // Vérifie si le symbole est déjà présent dans les alertes sélectionnées
     if (selectedAlerts.some((alert) => alert.symbol === symbol)) {
       // Supprime l'alerte si elle est déjà sélectionnée
       const updatedAlerts = selectedAlerts.filter(
         (alert) => alert.symbol !== symbol
       );
-      onAlertChange(updatedAlerts); // Met à jour localement
-      removeAlertFromDatabase(symbol); // Supprime de MongoDB
+
+      // Met à jour l'état local avec les nouvelles alertes
+      onAlertChange(updatedAlerts);
+
+      // Supprime l'alerte dans la base de données (via API)
+      removeAlertFromDatabase(symbol, userId);
     } else if (selectedAlerts.length < 2) {
-      // Ajoute l'alerte si moins de 2 sélectionnées
-      const crypto = data.find((crypto) => crypto.symbol === symbol);
-      if (!crypto) return;
-      const updatedAlerts = [...selectedAlerts, crypto];
-      onAlertChange(updatedAlerts); // Met à jour localement
-      addAlertToDatabase(symbol); // Ajoute dans MongoDB
-    } else {
-      // Si limite atteinte, affiche un toast
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000); // Cache le toast après 3 secondes
-    }
-  }
+      // Ajoute une nouvelle alerte si le nombre maximum n'est pas atteint
+      const updatedAlerts = [...selectedAlerts, { ...crypto, alert: true }];
 
-  async function addAlertToDatabase(symbol: string) {
-    const crypto = data.find((crypto) => crypto.symbol === symbol);
-    if (!crypto) return;
+      // Met à jour l'état local avec les nouvelles alertes
+      onAlertChange(updatedAlerts);
 
-    try {
-      const response = await fetch("/api/alert", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      // Ajoute l'alerte dans la base de données (via API)
+      addAlertToDatabase(
+        {
+          ...crypto,
+          price: crypto.current_price ?? 0, // Défaut à 0 si manquant
+          priceChange: crypto.price_change_percentage_24h ?? 0, // Défaut à 0 si manquant
         },
-        body: JSON.stringify({
-          userId: "12345", // Remplacez par l'utilisateur authentifié
-          alerts: [
-            {
-              name: crypto.name,
-              symbol: crypto.symbol,
-              price: crypto.price,
-              priceChange: crypto.priceChange,
-              message: `${crypto.name} price is being tracked.`, // Ajoutez un message valide ici
-              timestamp: new Date().toISOString(),
-            },
-          ],
-        }),
-      });
+        userId
+      );
+    } else {
+      // Affiche un toast si le nombre maximum d'alertes est atteint
+      setShowToast(true);
 
-      if (!response.ok) {
-        throw new Error("Failed to add alert to MongoDB");
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  async function removeAlertFromDatabase(symbol: string) {
-    try {
-      const response = await fetch(`/api/alert?userId=12345&symbol=${symbol}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to remove alert from MongoDB");
-      }
-    } catch (error) {
-      console.error(error);
+      // Cache le toast après 3 secondes
+      setTimeout(() => setShowToast(false), 3000);
     }
   }
 
   return (
     <div className="relative">
-      {/* Toast */}
       {showToast && (
         <div className="fixed top-4 right-4 z-50">
           <IconToast
@@ -110,7 +93,6 @@ export const Table: React.FC<TableProps> = ({
         </div>
       )}
 
-      {/* Tableau */}
       <table className="w-full border-collapse rounded-lg bg-background text-foreground">
         <thead>
           <tr>
@@ -137,7 +119,8 @@ export const Table: React.FC<TableProps> = ({
                 {crypto.symbol.toUpperCase()}
               </td>
               <td className="border border-gray-300 p-2 text-center">
-                ${crypto.price.toFixed(2)}
+                $
+                {crypto.current_price ? crypto.current_price.toFixed(2) : "N/A"}
               </td>
               <td
                 className={`border border-gray-300 p-2 text-center ${
@@ -158,7 +141,7 @@ export const Table: React.FC<TableProps> = ({
                       !selectedAlerts.some(
                         (alert) => alert.symbol === crypto.symbol
                       ) && selectedAlerts.length >= 2
-                    } // Désactiver si limite atteinte
+                    }
                   />
                 </div>
               </td>

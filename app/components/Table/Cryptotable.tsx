@@ -7,12 +7,10 @@ export const CryptoTable: React.FC<{
   onAlertChange: (updatedAlerts: CryptoData[]) => void;
 }> = ({ cryptos, alerts, onAlertChange }) => {
   return (
-    <div className="mx-4">
-      <Table
-        data={cryptos}
-        selectedAlerts={alerts}
-        onAlertChange={onAlertChange}
-      />
-    </div>
+    <Table
+      data={cryptos}
+      selectedAlerts={alerts}
+      onAlertChange={onAlertChange}
+    />
   );
 };

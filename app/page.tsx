@@ -31,7 +31,13 @@ const HomePage: React.FC = () => {
   const [isWalletOpen, setIsWalletOpen] = useState(false);
   const [view, setView] = useState<"table" | "graph">("table");
   const [alerts, setAlerts] = useState<
-    { name: string; symbol: string; price: number; priceChange: number }[]
+    {
+      name: string;
+      symbol: string;
+      price: number;
+      priceChange: number;
+      price_change_percentage_24h: number;
+    }[]
   >([]);
 
   useEffect(() => {
@@ -81,7 +87,7 @@ const HomePage: React.FC = () => {
   }
   return (
     <main className="relative w-screen min-h-screen bg-background overflow-auto mb-24">
-      <div className="mt-44 md:mt-36 mb-10 md:mb-6">
+      <div className="mt-40 md:mt-24 mb-10 md:mb-6">
         {/* Section Hero */}
         <Hero />
 
@@ -99,7 +105,7 @@ const HomePage: React.FC = () => {
       </div>
       <div
         id="add_crypto"
-        className="flex items-center gap-4 mr-4 justify-end mb-2"
+        className="flex items-center gap-4 mr-8 justify-end mb-2"
       >
         <button
           onClick={() => setIsWalletOpen(true)}
@@ -131,12 +137,23 @@ const HomePage: React.FC = () => {
         <div className="mx-4">
           <CryptoTable
             cryptos={filteredCryptos.map((crypto) => ({
-              ...crypto,
-              price: crypto.current_price,
-              priceChange: crypto.price_change_percentage_24h,
+              name: crypto.name,
+              symbol: crypto.symbol,
+              price: crypto.current_price ?? 0,
+              priceChange: crypto.price_change_percentage_24h ?? 0,
+              price_change_percentage_24h:
+                crypto.price_change_percentage_24h ?? 0,
             }))}
             alerts={alerts}
-            onAlertChange={setAlerts}
+            onAlertChange={(updatedAlerts) =>
+              setAlerts(
+                updatedAlerts.map((alert) => ({
+                  ...alert,
+                  price_change_percentage_24h:
+                    alert.price_change_percentage_24h ?? 0,
+                }))
+              )
+            }
           />
         </div>
       ) : filteredCryptos.length > 1 ? (

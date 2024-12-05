@@ -11,18 +11,17 @@ interface AlertType {
   timestamp: Date;
 }
 
-// Définition du schéma de validation pour les alertes
-
-export const alertSchema = Joi.object({
-  userId: Joi.string().required(), // ID utilisateur requis
+// Schéma de validation avec Joi
+const alertSchema = Joi.object({
+  userId: Joi.string().required(),
   alerts: Joi.array()
     .items(
       Joi.object({
-        name: Joi.string().required(), // Nom de la crypto requis
-        symbol: Joi.string().required(), // Symbole requis
-        price: Joi.number().required(), // Prix requis
-        priceChange: Joi.number().required(), // Variation en pourcentage
-        timestamp: Joi.date().required(), // Timestamp requis
+        name: Joi.string().required(),
+        symbol: Joi.string().required(),
+        price: Joi.number().required(),
+        priceChange: Joi.number().required(),
+        timestamp: Joi.date().required(),
       })
     )
     .required(),
@@ -46,7 +45,11 @@ export async function GET(req: Request) {
     const userAlerts = await Alert.findOne({ userId });
 
     if (!userAlerts || userAlerts.alerts.length === 0) {
-      return NextResponse.json({ success: true, data: [] });
+      return NextResponse.json({
+        success: true,
+        data: [],
+        message: "No alerts found",
+      });
     }
 
     // Supprimer les doublons
@@ -75,39 +78,60 @@ export async function POST(req: Request) {
   try {
     await dbConnect();
 
-    const body: { userId: string; alerts: AlertType[] } = await req.json(); // Typage des données reçues
+    // Étape 1 : Lire et parser le corps de la requête
+    const body = await req.json();
 
-    const { userId, alerts } = body;
+    // Étape 2 : Nettoyer les alertes pour s'assurer que toutes les données nécessaires sont présentes
+    if (Array.isArray(body.alerts)) {
+      body.alerts = body.alerts.map((alert: Partial<AlertType>) => ({
+        name: alert.name || "Unknown",
+        symbol: alert.symbol || "Unknown",
+        price: alert.price ?? 0, // Valeur par défaut si le prix est manquant
+        priceChange: alert.priceChange ?? 0, // Valeur par défaut si le changement est manquant
+        timestamp: alert.timestamp || new Date(), // Date actuelle si aucune date n'est fournie
+      }));
+    }
 
-    if (!userId || !Array.isArray(alerts)) {
+    console.log("Sanitized alerts before validation:", body.alerts);
+
+    // Étape 3 : Valider les données avec Joi
+    const { error } = alertSchema.validate(body);
+    if (error) {
+      console.error("Validation errors:", error.details);
       return NextResponse.json(
-        { success: false, error: "Invalid request data" },
+        { success: false, error: error.details },
         { status: 400 }
       );
     }
 
+    const { userId, alerts } = body;
+
+    // Étape 4 : Chercher ou créer un document d'alertes pour l'utilisateur
     let userAlerts = await Alert.findOne({ userId });
     if (!userAlerts) {
       userAlerts = new Alert({ userId, alerts: [] });
     }
 
-    // Ajouter ou mettre à jour les alertes
+    // Étape 5 : Ajouter ou mettre à jour les alertes existantes
     alerts.forEach((newAlert: AlertType) => {
       const existingAlertIndex = userAlerts.alerts.findIndex(
         (alert: AlertType) => alert.symbol === newAlert.symbol
       );
+
       if (existingAlertIndex !== -1) {
-        userAlerts.alerts[existingAlertIndex] = newAlert;
+        userAlerts.alerts[existingAlertIndex] = newAlert; // Mise à jour
       } else {
-        userAlerts.alerts.push(newAlert);
+        userAlerts.alerts.push(newAlert); // Ajout
       }
     });
 
+    // Étape 6 : Sauvegarder les modifications dans MongoDB
     await userAlerts.save();
+    console.log("Alerts saved successfully.");
 
     return NextResponse.json({ success: true, data: userAlerts });
   } catch (err) {
-    console.error(err);
+    console.error("Error in POST /api/alert:", err);
     return NextResponse.json(
       { success: false, error: (err as Error).message },
       { status: 500 }
@@ -124,9 +148,14 @@ export async function DELETE(req: Request) {
     const userId = url.searchParams.get("userId");
     const symbol = url.searchParams.get("symbol");
 
-    if (!userId || !symbol) {
+    if (
+      !userId ||
+      !symbol ||
+      typeof userId !== "string" ||
+      typeof symbol !== "string"
+    ) {
       return NextResponse.json(
-        { success: false, error: "userId and symbol are required" },
+        { success: false, error: "Invalid userId or symbol" },
         { status: 400 }
       );
     }

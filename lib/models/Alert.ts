@@ -1,20 +1,28 @@
 import mongoose from "mongoose";
 
-const AlertSchema = new mongoose.Schema({
-  userId: { type: String, required: true }, // ID utilisateur requis
-  alerts: {
-    type: [
-      {
-        name: { type: String, required: true }, // Nom de la crypto
-        symbol: { type: String, required: true }, // Symbole de la crypto
-        price: { type: Number, required: true }, // Prix actuel
-        priceChange: { type: Number, required: true }, // Changement en pourcentage
-        timestamp: { type: Date, required: true }, // Timestamp requis
-        message: { type: String, required: false },
-      },
-    ],
-    default: [], // Définit une valeur par défaut (tableau vide)
+const AlertSchema = new mongoose.Schema(
+  {
+    userId: { type: String, required: true, index: true }, // Index sur userId
+    alerts: {
+      type: [
+        {
+          name: { type: String, required: true, default: "Unknown" }, // Valeur par défaut
+          symbol: {
+            type: String,
+            required: true,
+            index: true,
+            default: "Unknown",
+          },
+          price: { type: Number, required: true, min: 0, default: 0 }, // Minimum 0 et valeur par défaut
+          priceChange: { type: Number, required: true, default: 0 }, // Valeur par défaut
+          timestamp: { type: Date, required: true, default: Date.now }, // Date actuelle si manquante
+          message: { type: String, default: "" }, // Champ optionnel avec valeur par défaut
+        },
+      ],
+      default: [], // Tableau vide par défaut
+    },
   },
-});
+  { timestamps: true } // Champs createdAt et updatedAt
+);
 
 export default mongoose.models.Alert || mongoose.model("Alert", AlertSchema);
