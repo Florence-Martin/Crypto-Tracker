@@ -37,6 +37,7 @@ const HomePage: React.FC = () => {
       current_price: number;
       priceChange: number;
       price_change_percentage_24h: number;
+      image: string;
     }[]
   >([]);
 
@@ -60,6 +61,7 @@ const HomePage: React.FC = () => {
           type: alert.name,
           message: `${alert.name} is being tracked.`,
           timestamp: new Date(),
+          image: alert.image,
         }))
       : [
           {
@@ -67,6 +69,7 @@ const HomePage: React.FC = () => {
             type: "No Alerts",
             message: "You have not selected any alerts.",
             timestamp: new Date(),
+            image: "",
           },
         ];
 
@@ -117,25 +120,27 @@ const HomePage: React.FC = () => {
           <span className="absolute inset-0 -rotate-6 bg-yellow-300 scale-x-0 group-hover:scale-x-100 transition-transform origin-bottom z-0"></span>
         </button>
 
-        <Button
-          primary={view === "table"}
-          label="Table"
-          onClick={() => setView("table")}
-          backgroundColor={view === "table" ? "#4CAF50" : "#3F3F46"}
-        />
-        <Button
-          primary={view === "graph"}
-          label="Graph"
-          onClick={() => setView("graph")}
-          backgroundColor={view === "graph" ? "#4CAF50" : "#3F3F46"}
-        />
+        <div className="hidden md:flex items-center gap-4">
+          <Button
+            primary={view === "table"}
+            label="Table"
+            onClick={() => setView("table")}
+            backgroundColor={view === "table" ? "#4CAF50" : "#3F3F46"}
+          />
+          <Button
+            primary={view === "graph"}
+            label="Graph"
+            onClick={() => setView("graph")}
+            backgroundColor={view === "graph" ? "#4CAF50" : "#3F3F46"}
+          />
+        </div>
       </div>
 
       {/* Conteneur table + graphe */}
-      <div className="flex flex-col md:flex-row gap-4 mx-4">
+      <div className="flex flex-col md:flex-row gap-4 mx-4 items-stretch">
         {/* Table */}
         <div
-          className={`transition-all duration-300 ${
+          className={`transition-all duration-300 h-full ${
             view === "table" ? "md:w-3/4 w-full" : "md:w-1/4 w-full"
           }`}
         >
@@ -145,6 +150,7 @@ const HomePage: React.FC = () => {
               symbol: crypto.symbol,
               current_price: crypto.current_price ?? 0,
               priceChange: crypto.price_change_percentage_24h ?? 0,
+              image: crypto.image,
             }))}
             alerts={alerts}
             onAlertChange={(updatedAlerts) =>
@@ -162,12 +168,12 @@ const HomePage: React.FC = () => {
 
         {/* Graph */}
         <div
-          className={`transition-all duration-300 ${
+          className={`transition-all duration-300 h-full ${
             view === "graph" ? "md:w-3/4 w-full" : "md:w-1/4 w-full"
           }`}
         >
           {filteredCryptos.length > 1 ? (
-            <Card className="mb-6">
+            <Card className="mb-6 h-full">
               <CardHeader>
                 <CardTitle>Cryptocurrency Prices</CardTitle>
                 <CardDescription>Real-time cryptocurrency data</CardDescription>
@@ -196,7 +202,6 @@ const HomePage: React.FC = () => {
           )}
         </div>
       </div>
-
       {/* Alertes */}
       <CryptoAlert alerts={alertDetails} />
 

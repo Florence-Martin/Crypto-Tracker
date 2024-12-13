@@ -13,11 +13,13 @@ export interface ButtonProps {
   /** How large should the button be? */
   size?: "small" | "medium" | "large";
   /** Button contents */
-  label: string;
+  label?: string;
   /** Optional icon to display alongside the label */
   icon?: React.ReactNode;
   /** Optional click handler */
   onClick?: () => void;
+  /** Optional class name */
+  className?: string;
 }
 
 /** Primary UI component for user interaction */

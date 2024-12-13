@@ -6,15 +6,16 @@ import {
   addAlertToDatabase,
   removeAlertFromDatabase,
 } from "@/services/alertsService";
+import Image from "next/image";
 
 export interface CryptoData {
   name: string;
   symbol: string;
-  // price: number;
   priceChange: number;
   current_price?: number;
   price_change_percentage_24h?: number;
   alert?: boolean;
+  image: string;
 }
 
 export interface TableProps {
@@ -112,7 +113,14 @@ export const Table: React.FC<TableProps> = ({
         <tbody>
           {data.map((crypto) => (
             <tr key={crypto.symbol}>
-              <td className="border border-gray-300 p-2 text-center">
+              <td className="border border-gray-300 p-2 text-left">
+                <Image
+                  src={crypto.image}
+                  alt={`${name} logo`}
+                  className="rounded-full flex md:inline-block mr-10"
+                  width={36}
+                  height={36}
+                />
                 {crypto.name}
               </td>
               <td className="border border-gray-300 p-2 text-center hidden md:table-cell">
@@ -121,7 +129,7 @@ export const Table: React.FC<TableProps> = ({
               <td className="border border-gray-300 p-2 text-center">
                 $
                 {crypto.current_price !== undefined
-                  ? crypto.current_price.toFixed(2)
+                  ? crypto.current_price.toLocaleString()
                   : "N/A"}
               </td>
               <td

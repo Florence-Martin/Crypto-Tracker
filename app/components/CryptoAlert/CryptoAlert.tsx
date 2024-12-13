@@ -6,6 +6,7 @@ interface CryptoAlert {
   type: string;
   message: string;
   timestamp: Date;
+  image: string;
 }
 
 interface CryptoAlertsProps {
@@ -25,9 +26,9 @@ export default function CryptoAlert({ alerts }: CryptoAlertsProps) {
               className="p-4 hover:shadow-lg transition-shadow"
             >
               <div className="flex items-center gap-4">
-                <div className="w-16 h-16 bg-muted rounded-lg overflow-hidden">
+                <div className="w-16 h-16 rounded-lg overflow-hidden">
                   <Image
-                    src="/alertWarning.svg"
+                    src={alert.image || "/alertWarning.svg"}
                     alt={`${alert.type} icon`}
                     width={64}
                     height={64}
