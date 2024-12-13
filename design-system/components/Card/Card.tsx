@@ -1,5 +1,7 @@
 import React from "react";
 import "./card.css";
+import { Button } from "@/design-system";
+import { PencilLine, Trash2 } from "lucide-react";
 
 export interface CardProps {
   name: string;
@@ -29,10 +31,22 @@ export const Card: React.FC<CardProps> = ({
         <p>Quantity: {quantity}</p>
         <p>Total Value: ${totalValue}</p>
         <p className={priceChange >= 0 ? "positive" : "negative"}>
-          {/* {priceChange >= 0 ? "+" : ""}
-          {priceChange.toFixed(2)}% */}
           {formattedPriceChange}
         </p>
+      </div>
+      <div className="flex justify-end gap-4">
+        <Button
+          icon={<Trash2 color="red" />}
+          size="small"
+          primary
+          label="Delete"
+        />
+        <Button
+          icon={<PencilLine color="yellow" />}
+          size="small"
+          primary
+          label="Modify"
+        />
       </div>
     </div>
   );

@@ -2,17 +2,15 @@
 
 import React from "react";
 import { useCrypto } from "../../context/CryptoContext";
-import CryptoPriceCard from "./CryptoPriceCard"; // Composant individuel pour afficher une crypto
+import CryptoPriceCard from "./CryptoPriceCard";
 
 export function CryptoDashboard() {
-  const { cryptos, isLoading, error } = useCrypto(); // Récupère les données des cryptos via le contexte
+  const { cryptos, isLoading, error } = useCrypto();
 
-  // Affiche un message de chargement si les données sont en cours de récupération
   if (isLoading) {
     return <p>Loading...</p>;
   }
 
-  // Affiche un message d'erreur si une erreur survient
   if (error) {
     return <p className="text-red-500">Error: {error}</p>;
   }
@@ -24,17 +22,11 @@ export function CryptoDashboard() {
       ["bitcoin", "ethereum", "tether"].includes(crypto.id.toLowerCase())
     )
     .map((crypto) => ({
-      name: crypto.name, // Nom de la crypto (ex. "Bitcoin")
-      symbol: crypto.symbol.toUpperCase(), // Symbole en majuscules (ex. "BTC")
-      price: crypto.current_price, // Prix actuel récupéré depuis l'API
-      percentageChange: crypto.price_change_percentage_24h, // Variation en pourcentage sur 24h
-      icon:
-        // Attribution d'une icône en fonction de l'ID de la crypto
-        crypto.id === "bitcoin"
-          ? "dollar"
-          : crypto.id === "ethereum"
-          ? "diamond"
-          : ("leaf" as "dollar" | "diamond" | "leaf"), // Icônes conditionnelles pour Tether
+      name: crypto.name,
+      symbol: crypto.symbol.toUpperCase(),
+      price: crypto.current_price,
+      percentageChange: crypto.price_change_percentage_24h,
+      image: crypto.image,
     }));
 
   return (
@@ -48,12 +40,12 @@ export function CryptoDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto justify-items-center">
         {selectedCryptos.map((crypto) => (
           <CryptoPriceCard
-            key={crypto.symbol} // Clé unique pour chaque composant
-            name={crypto.name} // Nom de la crypto
-            symbol={crypto.symbol} // Symbole (ex. BTC, ETH)
-            price={crypto.price} // Prix actuel
-            percentageChange={crypto.percentageChange} // Variation sur 24h
-            icon={crypto.icon} // Icône spécifique
+            key={crypto.symbol}
+            name={crypto.name}
+            symbol={crypto.symbol}
+            price={crypto.price}
+            percentageChange={crypto.percentageChange}
+            image={crypto.image}
           />
         ))}
       </div>

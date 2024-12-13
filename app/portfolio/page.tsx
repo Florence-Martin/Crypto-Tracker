@@ -48,25 +48,6 @@ const PortfolioPage = () => {
         item.price_change_percentage_24h,
     };
   });
-  // const updatedPortfolio = portfolioArray.map((item) => {
-  //   const matchingCrypto = cryptos.find((crypto) => crypto.id === item.id);
-
-  //   const currentPrice = matchingCrypto?.current_price || 0;
-  //   const averagePrice =
-  //     item.quantity > 0 ? item.total_value / item.quantity : 0;
-
-  //   const priceChange =
-  //     averagePrice > 0
-  //       ? ((currentPrice - averagePrice) / averagePrice) * 100
-  //       : 0;
-
-  //   return {
-  //     ...item,
-  //     current_price: currentPrice,
-  //     total_value: item.quantity * currentPrice,
-  //     priceChange: parseFloat(priceChange.toFixed(2)), // Toujours un nombre
-  //   };
-  // });
 
   // Calcul de la valeur totale du portefeuille
   const totalPortfolioValue = updatedPortfolio.reduce(

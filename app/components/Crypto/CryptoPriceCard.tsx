@@ -1,50 +1,42 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { DollarSign, Diamond, Leaf } from "lucide-react"; // Import des différentes icônes
+import Image from "next/image";
+import React from "react";
 
-interface CryptoPriceProps {
+interface CryptoPriceCardProps {
   name: string;
   symbol: string;
   price: number;
   percentageChange: number;
-  icon: "dollar" | "diamond" | "leaf"; // Définition du type des icônes
+  image: string;
 }
 
-export default function CryptoPriceCard({
+const CryptoPriceCard: React.FC<CryptoPriceCardProps> = ({
   name,
   symbol,
   price,
   percentageChange,
-  icon,
-}: CryptoPriceProps) {
-  // Mappe les types d'icônes au composant correspondant
-  const IconComponent =
-    icon === "dollar" ? DollarSign : icon === "diamond" ? Diamond : Leaf;
-
+  image,
+}) => {
   return (
-    <Card className="w-full max-w-[240px]">
-      <CardContent className="pt-6 px-6 pb-4">
-        <div className="flex flex-col items-center text-center space-y-1.5">
-          <div className="bg-gray-100 p-4 rounded-full">
-            <div className="w-8 h-8 flex items-center justify-center">
-              {/* Icône dynamique */}
-              <IconComponent className="w-6 h-6 text-yellow-500" />
-            </div>
-          </div>
-          <h3 className="font-medium text-lg">{name}</h3>
-          <p className="text-sm text-muted-foreground">{symbol}</p>
-          <p className="text-2xl font-semibold mt-2">
-            ${price.toLocaleString()}
-          </p>
-          <p
-            className={`text-sm ${
-              percentageChange >= 0 ? "text-green-500" : "text-red-500"
-            }`}
-          >
-            {percentageChange >= 0 ? "+" : ""}
-            {percentageChange.toFixed(2)}%
-          </p>
-        </div>
-      </CardContent>
-    </Card>
+    <div className="p-4 border rounded-lg shadow-lg text-center flex flex-col items-center w-64 h-52">
+      <Image
+        src={image}
+        alt={`${name} logo`}
+        className="rounded-full"
+        width={64}
+        height={64}
+      />
+      <h2 className="text-xl font-bold mt-2">{name}</h2>
+      <p className="text-gray-600">{symbol}</p>
+      <p className="text-lg font-semibold">${price.toFixed(2)}</p>
+      <p
+        className={`text-sm ${
+          percentageChange >= 0 ? "text-green-500" : "text-red-500"
+        }`}
+      >
+        {percentageChange.toFixed(2)}%
+      </p>
+    </div>
   );
-}
+};
+
+export default CryptoPriceCard;
