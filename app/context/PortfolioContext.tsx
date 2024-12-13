@@ -11,6 +11,7 @@ interface Crypto {
   price_change_percentage_24h?: number;
   quantity?: number; // Propriété optionnelle pour la quantité
   priceHistory?: { date: string; price: number }[]; // Propriété optionnelle pour l'historique des prix
+  image?: string;
 }
 
 interface PortfolioItem {
@@ -22,6 +23,7 @@ interface PortfolioItem {
   price_change_percentage_24h: number;
   total_value: number;
   priceHistory: { date: string; price: number }[];
+  image?: string;
 }
 
 interface PortfolioContextProps {
@@ -62,6 +64,7 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({
                 crypto.price_change_percentage_24h || 0,
               total_value: (crypto.quantity || 0) * (crypto.current_price || 0),
               priceHistory: crypto.priceHistory || [],
+              image: crypto.image,
             }))
         );
 
@@ -84,6 +87,7 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({
       symbol: string;
       current_price: number;
       price_change_percentage_24h?: number;
+      image?: string;
     },
     quantity: number
   ) => {
@@ -101,6 +105,7 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({
       quantity,
       totalValue: parseFloat((quantity * crypto.current_price).toFixed(2)), // Calcul correct de totalValue
       priceHistory: [{ date: currentDate, price: crypto.current_price }], // Historique valide
+      image: crypto.image,
     };
 
     const portfolioData = {

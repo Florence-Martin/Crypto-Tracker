@@ -36,8 +36,14 @@ export default function CryptoAlert({ alerts }: CryptoAlertsProps) {
                   />
                 </div>
                 <div className="flex-1">
-                  <h2 className="text-xl font-semibold mb-1">
-                    {alert.type} Alert
+                  <h2
+                    className={`text-xl font-semibold mb-1 ${
+                      alert.type === "No Alerts selected"
+                        ? "text-green-500"
+                        : "text-red-600"
+                    }`}
+                  >
+                    {alert.type}
                   </h2>
                   <p className="text-muted-foreground">{alert.message}</p>
                 </div>
@@ -46,7 +52,6 @@ export default function CryptoAlert({ alerts }: CryptoAlertsProps) {
           ))
         ) : (
           <Card className="p-4 hover:shadow-lg transition-shadow text-center">
-            <h2 className="text-xl font-semibold mb-2">No Alerts Selected</h2>
             <p className="text-muted-foreground">
               You haven&apos;t selected any cryptocurrencies for alerts.
             </p>

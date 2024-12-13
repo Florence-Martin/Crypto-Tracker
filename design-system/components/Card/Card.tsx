@@ -10,6 +10,7 @@ export interface CardProps {
   quantity: number;
   totalValue: string;
   priceChange: number;
+  image: string;
 }
 
 export const Card: React.FC<CardProps> = ({
@@ -19,13 +20,19 @@ export const Card: React.FC<CardProps> = ({
   quantity = 0,
   totalValue = "0.00",
   priceChange = 0,
+  image = "",
 }) => {
   const formattedPriceChange = `${priceChange > 0 ? "+" : ""}${priceChange}%`;
   return (
     <div className="crypto-card">
-      <h3>
-        {name} ({symbol?.toUpperCase()})
-      </h3>
+      <div className="card-header">
+        <h3>
+          {name} ({symbol?.toUpperCase()})
+        </h3>
+        {image && (
+          <img src={image} alt={`${name} logo`} className="crypto-image" />
+        )}
+      </div>
       <div>
         <p>Current Price: ${price.toFixed(2)}</p>
         <p>Quantity: {quantity}</p>
@@ -42,7 +49,7 @@ export const Card: React.FC<CardProps> = ({
           label="Delete"
         />
         <Button
-          icon={<PencilLine color="yellow" />}
+          icon={<PencilLine color="orange" />}
           size="small"
           primary
           label="Modify"

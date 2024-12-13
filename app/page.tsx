@@ -66,7 +66,7 @@ const HomePage: React.FC = () => {
       : [
           {
             id: "no-alert",
-            type: "No Alerts",
+            type: "No Alerts selected",
             message: "You have not selected any alerts.",
             timestamp: new Date(),
             image: "",
