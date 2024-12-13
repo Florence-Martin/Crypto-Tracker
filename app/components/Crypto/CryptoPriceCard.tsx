@@ -25,7 +25,7 @@ const CryptoPriceCard: React.FC<CryptoPriceCardProps> = ({
         width={64}
         height={64}
       />
-      <h2 className="text-xl font-bold mt-2">{name}</h2>
+      <h2 className="text-2xl font-bold mt-2">{name}</h2>
       <p className="text-gray-600">{symbol}</p>
       <p className="text-lg font-semibold">${price.toFixed(2)}</p>
       <p

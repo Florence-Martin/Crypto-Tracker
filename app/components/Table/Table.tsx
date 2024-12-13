@@ -10,7 +10,7 @@ import {
 export interface CryptoData {
   name: string;
   symbol: string;
-  price: number;
+  // price: number;
   priceChange: number;
   current_price?: number;
   price_change_percentage_24h?: number;
@@ -63,7 +63,7 @@ export const Table: React.FC<TableProps> = ({
       addAlertToDatabase(
         {
           ...crypto,
-          price: crypto.current_price ?? 0, // Défaut à 0 si manquant
+          current_price: crypto.current_price ?? 0, // Défaut à 0 si manquant
           priceChange: crypto.price_change_percentage_24h ?? 0, // Défaut à 0 si manquant
         },
         userId
@@ -120,7 +120,9 @@ export const Table: React.FC<TableProps> = ({
               </td>
               <td className="border border-gray-300 p-2 text-center">
                 $
-                {crypto.current_price ? crypto.current_price.toFixed(2) : "N/A"}
+                {crypto.current_price !== undefined
+                  ? crypto.current_price.toFixed(2)
+                  : "N/A"}
               </td>
               <td
                 className={`border border-gray-300 p-2 text-center ${

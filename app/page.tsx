@@ -34,7 +34,7 @@ const HomePage: React.FC = () => {
     {
       name: string;
       symbol: string;
-      price: number;
+      current_price: number;
       priceChange: number;
       price_change_percentage_24h: number;
     }[]
@@ -85,6 +85,7 @@ const HomePage: React.FC = () => {
       </div>
     );
   }
+
   return (
     <main className="relative w-screen min-h-screen bg-background overflow-auto mb-24">
       <div className="mt-40 md:mt-24 mb-10 md:mb-6">
@@ -129,26 +130,28 @@ const HomePage: React.FC = () => {
           backgroundColor={view === "graph" ? "#4CAF50" : "#3F3F46"}
         />
       </div>
-      {isLoading ? (
-        <div className="flex justify-center items-center h-full">
-          <Loader />
-        </div>
-      ) : view === "table" ? (
-        <div className="mx-4">
+
+      {/* Conteneur table + graphe */}
+      <div className="flex flex-col md:flex-row gap-4 mx-4">
+        {/* Table */}
+        <div
+          className={`transition-all duration-300 ${
+            view === "table" ? "md:w-3/4 w-full" : "md:w-1/4 w-full"
+          }`}
+        >
           <CryptoTable
             cryptos={filteredCryptos.map((crypto) => ({
               name: crypto.name,
               symbol: crypto.symbol,
-              price: crypto.current_price ?? 0,
+              current_price: crypto.current_price ?? 0,
               priceChange: crypto.price_change_percentage_24h ?? 0,
-              price_change_percentage_24h:
-                crypto.price_change_percentage_24h ?? 0,
             }))}
             alerts={alerts}
             onAlertChange={(updatedAlerts) =>
               setAlerts(
                 updatedAlerts.map((alert) => ({
                   ...alert,
+                  current_price: alert.current_price ?? 0,
                   price_change_percentage_24h:
                     alert.price_change_percentage_24h ?? 0,
                 }))
@@ -156,36 +159,43 @@ const HomePage: React.FC = () => {
             }
           />
         </div>
-      ) : filteredCryptos.length > 1 ? (
-        <div className="mx-4">
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle>Cryptocurrency Prices</CardTitle>
-              <CardDescription>Real-time cryptocurrency data</CardDescription>
-            </CardHeader>
-            <CryptoGraph
-              data={filteredCryptos.map((crypto, index) => ({
-                name: crypto.name,
-                current_price: crypto.current_price,
-                fill: `hsl(var(--chart-${(index % 3) + 1}))`,
-              }))}
-              chartConfig={{
-                current_price: {
-                  label: "Current Price",
-                  color: "hsl(var(--chart-2))",
-                },
-              }}
-            />
-            <CardFooter className="flex-col items-start gap-2 text-sm">
-              <div className="font-medium">Real-time updates</div>
-            </CardFooter>
-          </Card>
+
+        {/* Graph */}
+        <div
+          className={`transition-all duration-300 ${
+            view === "graph" ? "md:w-3/4 w-full" : "md:w-1/4 w-full"
+          }`}
+        >
+          {filteredCryptos.length > 1 ? (
+            <Card className="mb-6">
+              <CardHeader>
+                <CardTitle>Cryptocurrency Prices</CardTitle>
+                <CardDescription>Real-time cryptocurrency data</CardDescription>
+              </CardHeader>
+              <CryptoGraph
+                data={filteredCryptos.map((crypto, index) => ({
+                  name: crypto.name,
+                  current_price: crypto.current_price,
+                  fill: `hsl(var(--chart-${(index % 3) + 1}))`,
+                }))}
+                chartConfig={{
+                  current_price: {
+                    label: "Current Price",
+                    color: "hsl(var(--chart-2))",
+                  },
+                }}
+              />
+              <CardFooter className="flex-col items-start gap-2 text-sm">
+                <div className="font-medium">Real-time updates</div>
+              </CardFooter>
+            </Card>
+          ) : (
+            <p className="text-center text-muted-foreground">
+              Not enough data to display the graph.
+            </p>
+          )}
         </div>
-      ) : (
-        <p className="text-center text-muted-foreground">
-          Not enough data to display the graph.
-        </p>
-      )}
+      </div>
 
       {/* Alertes */}
       <CryptoAlert alerts={alertDetails} />
