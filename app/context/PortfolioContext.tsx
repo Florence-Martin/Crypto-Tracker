@@ -28,6 +28,7 @@ interface PortfolioItem {
 
 interface PortfolioContextProps {
   portfolio: PortfolioItem[];
+  setPortfolio: React.Dispatch<React.SetStateAction<PortfolioItem[]>>;
   addToPortfolio: (crypto: Crypto, quantity: number) => Promise<void>;
   loadPortfolio: () => Promise<void>;
 }
@@ -142,7 +143,7 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <PortfolioContext.Provider
-      value={{ portfolio, addToPortfolio, loadPortfolio }}
+      value={{ portfolio, setPortfolio, addToPortfolio, loadPortfolio }}
     >
       {children}
     </PortfolioContext.Provider>

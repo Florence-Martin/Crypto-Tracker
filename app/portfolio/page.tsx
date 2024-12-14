@@ -11,7 +11,7 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const PortfolioPage = () => {
-  const { portfolio } = usePortfolio(); // Récupère le portefeuille du contexte
+  const { portfolio, setPortfolio } = usePortfolio(); // Récupère le portefeuille du contexte
   const { cryptos, isLoading, error } = useCrypto(); // Récupère les cryptos disponibles et leurs prix
 
   if (!portfolio || isLoading) {
@@ -30,7 +30,7 @@ const PortfolioPage = () => {
     );
   }
 
-  console.log("Portfolio Data:", portfolio);
+  // console.log("Portfolio Data:", portfolio);
 
   // Regroupe les cryptos identiques dans le portefeuille pour éviter les doublons
   const groupedPortfolio = portfolio.reduce<
@@ -46,11 +46,11 @@ const PortfolioPage = () => {
   }, {});
 
   const portfolioArray = Object.values(groupedPortfolio);
-  console.log("Portfolio Array:", portfolioArray);
+  // console.log("Portfolio Array:", portfolioArray);
 
   // Vérifie que les données sont correctement définies
   portfolioArray.forEach((item) => {
-    console.log("Portfolio Item:", item);
+    // console.log("Portfolio Item:", item);
   });
 
   // Synchronise les prix actuels des cryptos et calcule les pourcentages
@@ -70,7 +70,7 @@ const PortfolioPage = () => {
     };
   });
 
-  console.log("Updated Portfolio:", updatedPortfolio);
+  // console.log("Updated Portfolio:", updatedPortfolio);
 
   // Calcul de la valeur totale du portefeuille
   const totalPortfolioValue = updatedPortfolio.reduce(
@@ -122,6 +122,12 @@ const PortfolioPage = () => {
       ? chartData
       : { labels: [], datasets: [] };
 
+  // Fonction pour supprimer une Card
+  const handleDeleteCard = (id: string) => {
+    const updatedPortfolio = portfolio.filter((item) => item.id !== id);
+    setPortfolio(updatedPortfolio); // Met à jour le portefeuille via le contexte
+  };
+
   return (
     <div className="mx-4 p-4 my-16 md:my-12">
       <h1 className="text-2xl font-bold mb-4">My Wallet</h1>
@@ -157,6 +163,7 @@ const PortfolioPage = () => {
                 totalValue={item.total_value.toFixed(2)}
                 priceChange={item.priceChange}
                 image={item.image || ""}
+                onDelete={() => handleDeleteCard(item.id)}
               />
             ))}
           </div>

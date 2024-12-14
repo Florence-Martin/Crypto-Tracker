@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import "./card.css";
 import { Button } from "@/design-system";
 import { PencilLine, Trash2 } from "lucide-react";
@@ -11,6 +12,7 @@ export interface CardProps {
   totalValue: string;
   priceChange: number;
   image: string;
+  onDelete?: () => void;
 }
 
 export const Card: React.FC<CardProps> = ({
@@ -21,6 +23,7 @@ export const Card: React.FC<CardProps> = ({
   totalValue = "0.00",
   priceChange = 0,
   image = "",
+  onDelete,
 }) => {
   const formattedPriceChange = `${priceChange > 0 ? "+" : ""}${priceChange}%`;
   return (
@@ -30,7 +33,13 @@ export const Card: React.FC<CardProps> = ({
           {name} ({symbol?.toUpperCase()})
         </h3>
         {image && (
-          <img src={image} alt={`${name} logo`} className="crypto-image" />
+          <Image
+            src={image}
+            alt={`${name} logo`}
+            className="crypto-image"
+            width={50}
+            height={50}
+          />
         )}
       </div>
       <div>
@@ -47,6 +56,7 @@ export const Card: React.FC<CardProps> = ({
           size="small"
           primary
           label="Delete"
+          onClick={onDelete}
         />
         <Button
           icon={<PencilLine color="orange" />}
