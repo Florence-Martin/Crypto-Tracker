@@ -153,34 +153,119 @@ const PortfolioPage = () => {
   };
 
   // Fonction appelée lorsqu'on sauvegarde les modifications
-  const handleSaveChanges = async (updatedData: { quantity: number }) => {
+  // const handleSaveChanges = async (updatedData: {
+  //   action: string;
+  //   quantity: number;
+  // }) => {
+  //   if (editingCard) {
+  //     try {
+  //       // Calcule la nouvelle quantité
+  //       const updatedQuantity =
+  //         updatedData.action === "buy"
+  //           ? editingCard.quantity + updatedData.quantity
+  //           : editingCard.quantity - updatedData.quantity;
+
+  //       const updatedTotalValue = updatedQuantity * editingCard.current_price;
+
+  //       const updatedCrypto = {
+  //         ...editingCard,
+  //         quantity: updatedQuantity,
+  //         total_value: updatedTotalValue,
+  //       };
+
+  //       // Envoie la mise à jour vers l'API
+  //       const response = await fetch(`/api/portfolio?id=${editingCard._id}`, {
+  //         method: "PUT",
+  //         headers: { "Content-Type": "application/json" },
+  //         body: JSON.stringify(updatedCrypto),
+  //       });
+
+  //       if (response.ok) {
+  //         await response.json();
+
+  //         // Met à jour le contexte avec les données mises à jour
+  //         setPortfolio((prev) =>
+  //           prev.map((item) =>
+  //             item._id === editingCard._id
+  //               ? { ...item, ...updatedCrypto }
+  //               : item
+  //           )
+  //         );
+
+  //         console.log("Crypto mise à jour avec succès !");
+  //         setIsEditing(false);
+  //         setEditingCard(null);
+  //       } else {
+  //         console.error(
+  //           "Erreur lors de la mise à jour :",
+  //           await response.text()
+  //         );
+  //       }
+  //     } catch (error) {
+  //       console.error("Erreur réseau :", error);
+  //     }
+  //   }
+  // };
+  const handleSaveChanges = async (updatedData: {
+    action: string;
+    quantity: number;
+  }) => {
     if (editingCard) {
       try {
-        const updatedTotalValue =
-          updatedData.quantity * editingCard.current_price;
+        // Calcule la nouvelle quantité
+        const updatedQuantity =
+          updatedData.action === "buy"
+            ? editingCard.quantity + updatedData.quantity
+            : editingCard.quantity - updatedData.quantity;
 
+        const updatedTotalValue = updatedQuantity * editingCard.current_price;
+
+        // Construit l'objet conforme au modèle MongoDB
+        const updatedPortfolio = {
+          userId: "12345", // Assure-toi d'avoir un userId valide
+          cryptos: [
+            {
+              id: editingCard.id,
+              name: editingCard.name,
+              symbol: editingCard.symbol,
+              quantity: updatedQuantity,
+              totalValue: updatedTotalValue,
+              priceHistory: [
+                ...editingCard.priceHistory,
+                {
+                  date: new Date().toISOString(),
+                  price: editingCard.current_price,
+                },
+              ],
+              image: editingCard.image,
+            },
+          ],
+        };
+
+        // Envoie la requête PUT avec le bon format
         const response = await fetch(`/api/portfolio?id=${editingCard._id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userId: editingCard._id,
-            cryptos: [
-              {
-                ...editingCard,
-                quantity: updatedData.quantity,
-                totalValue: updatedTotalValue,
-              },
-            ],
-          }),
+          body: JSON.stringify(updatedPortfolio),
         });
 
         if (response.ok) {
-          const result = await response.json();
+          const _result = await response.json();
+
+          // Met à jour le contexte local
           setPortfolio((prev) =>
             prev.map((item) =>
-              item._id === editingCard._id ? result.data : item
+              item._id === editingCard._id
+                ? {
+                    ...item,
+                    quantity: updatedQuantity,
+                    total_value: updatedTotalValue,
+                  }
+                : item
             )
           );
+
+          console.log("Crypto mise à jour avec succès !");
           setIsEditing(false);
           setEditingCard(null);
         } else {
@@ -214,6 +299,7 @@ const PortfolioPage = () => {
             }}
             onSave={handleSaveChanges}
             initialQuantity={editingCard?.quantity || 0}
+            realQuantity={editingCard?.quantity || 0}
           />
           {/* Graphique */}
           <div className="mx-4 mt-16 md:mt-8 flex justify-center items-center">
@@ -254,8 +340,6 @@ const PortfolioPage = () => {
                 }}
                 onUpdate={() => {
                   if (item._id) {
-                    console.log("ObjectId MongoDB (_id) :", item._id);
-                    console.log("ID de la crypto :", item.id);
                     handleUpdateCard(item._id);
                   }
                 }}

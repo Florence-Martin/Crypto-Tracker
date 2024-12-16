@@ -132,39 +132,34 @@ export async function PUT(req: Request) {
 
     const body = await req.json(); // Récupère les données de la requête
     const url = new URL(req.url);
-    const id = url.searchParams.get("id"); // ID du portfolio à mettre à jour
+    const id = url.searchParams.get("id");
 
-    if (!id) {
+    // console.log("ID reçu pour mise à jour :", id);
+    // console.log("Données reçues pour mise à jour :", body);
+
+    if (!id || !Types.ObjectId.isValid(id)) {
       return NextResponse.json(
-        { success: false, error: "Portfolio ID is required" },
+        { success: false, error: "ID invalide pour MongoDB" },
         { status: 400 }
       );
     }
 
-    // Valide les données avec Joi
-    const { error } = portfolioSchema.validate(body);
-    if (error) {
-      return NextResponse.json(
-        { success: false, error: error.details[0].message },
-        { status: 400 }
-      );
-    }
-
-    // Met à jour les données dans MongoDB
-    const updatedPortfolio = await Portfolio.findByIdAndUpdate(id, body, {
-      new: true, // Retourne le document mis à jour
-      runValidators: true, // Exécute les validateurs Mongoose
-    });
+    const updatedPortfolio = await Portfolio.findByIdAndUpdate(
+      id,
+      { $set: body },
+      { new: true, runValidators: true }
+    );
 
     if (!updatedPortfolio) {
       return NextResponse.json(
-        { success: false, error: "Portfolio not found" },
+        { success: false, error: "Portfolio non trouvé" },
         { status: 404 }
       );
     }
 
     return NextResponse.json({ success: true, data: updatedPortfolio });
   } catch (error) {
+    console.error("Erreur serveur lors de la mise à jour :", error);
     return NextResponse.json(
       { success: false, error: (error as Error).message },
       { status: 500 }
