@@ -1,18 +1,21 @@
 "use client";
 
-import React from "react";
-import { usePortfolio } from "../context/PortfolioContext";
+import React, { useState } from "react";
+import { usePortfolio, PortfolioItem } from "../context/PortfolioContext";
 import { useCrypto } from "../context/CryptoContext";
 import { Card } from "@/design-system";
 import Loader from "../components/Loader/Loader";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import CryptoModal from "../../design-system/components/Modal/CryptoModal";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const PortfolioPage = () => {
   const { portfolio, setPortfolio } = usePortfolio(); // Récupère le portefeuille du contexte
   const { cryptos, isLoading, error } = useCrypto(); // Récupère les cryptos disponibles et leurs prix
+  const [isEditing, setIsEditing] = useState(false); // État pour afficher la modal
+  const [editingCard, setEditingCard] = useState<PortfolioItem | null>(null); // Carte en cours de modification
 
   if (!portfolio || isLoading) {
     return (
@@ -46,12 +49,6 @@ const PortfolioPage = () => {
   }, {});
 
   const portfolioArray = Object.values(groupedPortfolio);
-  // console.log("Portfolio Array:", portfolioArray);
-
-  // Vérifie que les données sont correctement définies
-  portfolioArray.forEach((item) => {
-    // console.log("Portfolio Item:", item);
-  });
 
   // Synchronise les prix actuels des cryptos et calcule les pourcentages
   const updatedPortfolio = portfolioArray.map((item) => {
@@ -59,6 +56,7 @@ const PortfolioPage = () => {
 
     return {
       ...item,
+      _id: item._id, // Assure que _id existe toujours
       current_price: matchingCrypto?.current_price || item.current_price || 0,
       total_value:
         item.quantity *
@@ -123,11 +121,80 @@ const PortfolioPage = () => {
       : { labels: [], datasets: [] };
 
   // Fonction pour supprimer une Card
-  const handleDeleteCard = (id: string) => {
-    const updatedPortfolio = portfolio.filter((item) => item.id !== id);
-    setPortfolio(updatedPortfolio); // Met à jour le portefeuille via le contexte
+  const handleDeleteCard = (documentId: string) => {
+    console.log("ID principal envoyé pour suppression :", documentId);
+
+    if (!documentId) {
+      console.error("ID manquant pour la suppression.");
+      return;
+    }
+
+    fetch(`/api/portfolio?id=${documentId}`, { method: "DELETE" })
+      .then((response) => {
+        if (response.ok) {
+          setPortfolio((prev) =>
+            prev.filter((item) => item._id !== documentId)
+          );
+          console.log("Crypto supprimée avec succès !");
+        } else {
+          console.error("Erreur lors de la suppression :", response.statusText);
+        }
+      })
+      .catch((error) => console.error("Erreur réseau :", error));
   };
 
+  // Fonction pour modifier une Card
+  const handleUpdateCard = (id: string) => {
+    const cardToEdit = portfolio.find((item) => item._id === id);
+    if (cardToEdit) {
+      setEditingCard(cardToEdit);
+      setIsEditing(true); // Affichez la modal
+    }
+  };
+
+  // Fonction appelée lorsqu'on sauvegarde les modifications
+  const handleSaveChanges = async (updatedData: { quantity: number }) => {
+    if (editingCard) {
+      try {
+        const updatedTotalValue =
+          updatedData.quantity * editingCard.current_price;
+
+        const response = await fetch(`/api/portfolio?id=${editingCard._id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: editingCard._id,
+            cryptos: [
+              {
+                ...editingCard,
+                quantity: updatedData.quantity,
+                totalValue: updatedTotalValue,
+              },
+            ],
+          }),
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          setPortfolio((prev) =>
+            prev.map((item) =>
+              item._id === editingCard._id ? result.data : item
+            )
+          );
+          setIsEditing(false);
+          setEditingCard(null);
+        } else {
+          console.error(
+            "Erreur lors de la mise à jour :",
+            await response.text()
+          );
+        }
+      } catch (error) {
+        console.error("Erreur réseau :", error);
+      }
+    }
+  };
+  console.log("Updated Portfolio :", updatedPortfolio);
   return (
     <div className="mx-4 p-4 my-16 md:my-12">
       <h1 className="text-2xl font-bold mb-4">My Wallet</h1>
@@ -138,24 +205,34 @@ const PortfolioPage = () => {
         </p>
       ) : (
         <>
+          {/* Modal */}
+          <CryptoModal
+            isOpen={isEditing}
+            onClose={() => {
+              setIsEditing(false);
+              setEditingCard(null);
+            }}
+            onSave={handleSaveChanges}
+            initialQuantity={editingCard?.quantity || 0}
+          />
           {/* Graphique */}
           <div className="mx-4 mt-16 md:mt-8 flex justify-center items-center">
             <div className="w-full max-w-lg h-64">
-              <h2 className="text-xl font-semibold mb-4 text-center">
+              <h2 className="text-3xl font-semibold mb-4 text-center">
                 Portfolio Distribution
               </h2>
               <Pie data={dataToDisplay} options={chartOptions} />
             </div>
           </div>
 
-          <h3 className="text-xl font-bold mt-12 text-center">
+          <h3 className="text-2xl font-bold mt-20 text-center">
             Total wallet value: ${totalPortfolioValue.toFixed(2)}
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 text-gray-800 mt-8">
             {updatedPortfolio.map((item, index) => (
               <Card
-                key={`${item.id}-${index}`}
+                key={`${item._id}-${index}`}
                 name={item.name || "Unknown"}
                 symbol={item.symbol || ""}
                 price={item.current_price}
@@ -163,7 +240,25 @@ const PortfolioPage = () => {
                 totalValue={item.total_value.toFixed(2)}
                 priceChange={item.priceChange}
                 image={item.image || ""}
-                onDelete={() => handleDeleteCard(item.id)}
+                onDelete={() => {
+                  // On vérifie que _id est bien défini
+                  if (item._id) {
+                    // console.log("ObjectId MongoDB (_id) envoyé :", item._id);
+                    handleDeleteCard(item._id);
+                  } else {
+                    console.error(
+                      "ObjectId est manquant pour cette carte :",
+                      item
+                    );
+                  }
+                }}
+                onUpdate={() => {
+                  if (item._id) {
+                    console.log("ObjectId MongoDB (_id) :", item._id);
+                    console.log("ID de la crypto :", item.id);
+                    handleUpdateCard(item._id);
+                  }
+                }}
               />
             ))}
           </div>

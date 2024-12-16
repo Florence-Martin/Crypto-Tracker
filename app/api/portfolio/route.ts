@@ -2,6 +2,7 @@ import dbConnect from "../../../lib/dbConnect";
 import Portfolio from "../../../lib/models/Portfolio";
 import { NextResponse } from "next/server";
 import Joi from "joi";
+import { Types } from "mongoose";
 
 const portfolioSchema = Joi.object({
   userId: Joi.string().required(),
@@ -90,8 +91,48 @@ export async function DELETE(req: Request) {
   try {
     await dbConnect();
 
-    const url = new URL(req.url);
+    const url = new URL(req.url, `http://${req.headers.get("host")}`);
     const id = url.searchParams.get("id");
+
+    // console.log("ID reçu dans DELETE :", id);
+
+    if (!id || !Types.ObjectId.isValid(id)) {
+      // Méthode standard pour valider un ID MongoDB
+      return NextResponse.json(
+        { success: false, error: "ID invalide pour MongoDB" },
+        { status: 400 }
+      );
+    }
+
+    // Suppression du document
+    const deletedPortfolio = await Portfolio.findByIdAndDelete(id);
+
+    if (!deletedPortfolio) {
+      return NextResponse.json(
+        { success: false, error: "Portfolio non trouvé" },
+        { status: 404 }
+      );
+    }
+
+    console.log("Document supprimé avec succès :", deletedPortfolio);
+    return NextResponse.json({ success: true, data: deletedPortfolio });
+  } catch (error) {
+    console.error("Erreur serveur lors de la suppression :", error);
+    return NextResponse.json(
+      { success: false, error: (error as Error).message },
+      { status: 500 }
+    );
+  }
+}
+
+// Gestionnaire pour les requêtes PUT (Mise à jour d'un élément)
+export async function PUT(req: Request) {
+  try {
+    await dbConnect();
+
+    const body = await req.json(); // Récupère les données de la requête
+    const url = new URL(req.url);
+    const id = url.searchParams.get("id"); // ID du portfolio à mettre à jour
 
     if (!id) {
       return NextResponse.json(
@@ -100,16 +141,29 @@ export async function DELETE(req: Request) {
       );
     }
 
-    const deletedPortfolio = await Portfolio.findByIdAndDelete(id);
+    // Valide les données avec Joi
+    const { error } = portfolioSchema.validate(body);
+    if (error) {
+      return NextResponse.json(
+        { success: false, error: error.details[0].message },
+        { status: 400 }
+      );
+    }
 
-    if (!deletedPortfolio) {
+    // Met à jour les données dans MongoDB
+    const updatedPortfolio = await Portfolio.findByIdAndUpdate(id, body, {
+      new: true, // Retourne le document mis à jour
+      runValidators: true, // Exécute les validateurs Mongoose
+    });
+
+    if (!updatedPortfolio) {
       return NextResponse.json(
         { success: false, error: "Portfolio not found" },
         { status: 404 }
       );
     }
 
-    return NextResponse.json({ success: true, data: deletedPortfolio });
+    return NextResponse.json({ success: true, data: updatedPortfolio });
   } catch (error) {
     return NextResponse.json(
       { success: false, error: (error as Error).message },

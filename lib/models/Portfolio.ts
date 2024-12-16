@@ -4,6 +4,7 @@ const PortfolioSchema = new Schema({
   userId: { type: String, required: true },
   cryptos: [
     {
+      _id: { type: Schema.Types.ObjectId, auto: true }, // Ajout explicite de _id
       id: { type: String, required: true },
       name: { type: String, required: true },
       symbol: { type: String, required: true },

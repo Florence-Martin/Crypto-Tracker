@@ -44,6 +44,7 @@ export const Default: Story = {
     quantity: 1, // Ajoute une quantité par défaut
     totalValue: "45000.55", // Ajoute une valeur totale (en string comme attendu)
     priceChange: 3.25, // Exemple de changement positif en pourcentage
+    image: "https://assets.coingecko.com/coins/images/1/large/bitcoin.png", // URL de l'image
   },
 };
 
@@ -56,6 +57,7 @@ export const NegativeChange: Story = {
     quantity: 2, // Ajoute une quantité par défaut
     totalValue: "6019.98", // Valeur totale = price * quantity (format string)
     priceChange: -2.14, // Exemple de changement négatif en pourcentage
+    image: "https://assets.coingecko.com/coins/images/279/large/ethereum.png", // URL de l'image
   },
 };
 
@@ -68,5 +70,6 @@ export const CustomCard: Story = {
     quantity: 1000, // Ajoute une quantité par défaut
     totalValue: "72.00", // Valeur totale (string)
     priceChange: 12.34, // Exemple de changement positif important
+    image: "https://assets.coingecko.com/coins/images/5/large/dogecoin.png", // URL de l'image
   },
 };

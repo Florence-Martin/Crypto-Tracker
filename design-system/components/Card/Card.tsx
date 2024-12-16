@@ -12,7 +12,8 @@ export interface CardProps {
   totalValue: string;
   priceChange: number;
   image: string;
-  onDelete?: () => void;
+  onDelete?: () => void; // Callback pour la suppression
+  onUpdate?: () => void; // Callback pour la modification
 }
 
 export const Card: React.FC<CardProps> = ({
@@ -24,6 +25,7 @@ export const Card: React.FC<CardProps> = ({
   priceChange = 0,
   image = "",
   onDelete,
+  onUpdate,
 }) => {
   const formattedPriceChange = `${priceChange > 0 ? "+" : ""}${priceChange}%`;
   return (
@@ -63,6 +65,7 @@ export const Card: React.FC<CardProps> = ({
           size="small"
           primary
           label="Modify"
+          onClick={onUpdate}
         />
       </div>
     </div>

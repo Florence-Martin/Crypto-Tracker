@@ -14,7 +14,8 @@ interface Crypto {
   image?: string;
 }
 
-interface PortfolioItem {
+export interface PortfolioItem {
+  _id?: string; // Ajoute l'ID unique de MongoDB
   id: string;
   name: string;
   symbol: string;
@@ -54,8 +55,9 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({
         console.log("Portefeuille chargé depuis le backend :", data.data);
 
         const normalizedPortfolio = data.data.flatMap(
-          (item: { userId: string; cryptos: Crypto[] }) =>
+          (item: { _id: string; userId: string; cryptos: Crypto[] }) =>
             item.cryptos.map((crypto: Crypto) => ({
+              _id: item._id, // On récupère l'ObjectId
               id: crypto.id,
               name: crypto.name,
               symbol: crypto.symbol,
