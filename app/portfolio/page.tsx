@@ -153,59 +153,6 @@ const PortfolioPage = () => {
   };
 
   // Fonction appelée lorsqu'on sauvegarde les modifications
-  // const handleSaveChanges = async (updatedData: {
-  //   action: string;
-  //   quantity: number;
-  // }) => {
-  //   if (editingCard) {
-  //     try {
-  //       // Calcule la nouvelle quantité
-  //       const updatedQuantity =
-  //         updatedData.action === "buy"
-  //           ? editingCard.quantity + updatedData.quantity
-  //           : editingCard.quantity - updatedData.quantity;
-
-  //       const updatedTotalValue = updatedQuantity * editingCard.current_price;
-
-  //       const updatedCrypto = {
-  //         ...editingCard,
-  //         quantity: updatedQuantity,
-  //         total_value: updatedTotalValue,
-  //       };
-
-  //       // Envoie la mise à jour vers l'API
-  //       const response = await fetch(`/api/portfolio?id=${editingCard._id}`, {
-  //         method: "PUT",
-  //         headers: { "Content-Type": "application/json" },
-  //         body: JSON.stringify(updatedCrypto),
-  //       });
-
-  //       if (response.ok) {
-  //         await response.json();
-
-  //         // Met à jour le contexte avec les données mises à jour
-  //         setPortfolio((prev) =>
-  //           prev.map((item) =>
-  //             item._id === editingCard._id
-  //               ? { ...item, ...updatedCrypto }
-  //               : item
-  //           )
-  //         );
-
-  //         console.log("Crypto mise à jour avec succès !");
-  //         setIsEditing(false);
-  //         setEditingCard(null);
-  //       } else {
-  //         console.error(
-  //           "Erreur lors de la mise à jour :",
-  //           await response.text()
-  //         );
-  //       }
-  //     } catch (error) {
-  //       console.error("Erreur réseau :", error);
-  //     }
-  //   }
-  // };
   const handleSaveChanges = async (updatedData: {
     action: string;
     quantity: number;
@@ -327,10 +274,10 @@ const PortfolioPage = () => {
                 priceChange={item.priceChange}
                 image={item.image || ""}
                 onDelete={() => {
-                  // On vérifie que _id est bien défini
                   if (item._id) {
-                    // console.log("ObjectId MongoDB (_id) envoyé :", item._id);
-                    handleDeleteCard(item._id);
+                    if (confirm("Are you sure you want to delete this item?")) {
+                      handleDeleteCard(item._id);
+                    }
                   } else {
                     console.error(
                       "ObjectId est manquant pour cette carte :",
