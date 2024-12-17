@@ -24,6 +24,8 @@ export const CryptoGraph: React.FC<CryptoGraphProps> = ({
       <ChartContainer config={chartConfig || defaultChartConfig}>
         <LineChart
           data={data}
+          width={800}
+          height={400}
           margin={{ top: 24, left: 24, right: 24, bottom: 24 }}
         >
           <CartesianGrid strokeDasharray="3 3" />
