@@ -1,6 +1,6 @@
 export default function Hero() {
   return (
-    <section className="text-center py-2">
+    <section className="text-center py-4 mx-4">
       <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
         Track Your Crypto Portfolio
       </h1>

@@ -65,6 +65,7 @@ const PortfolioPage = () => {
         matchingCrypto?.price_change_percentage_24h ||
         item.price_change_percentage_24h ||
         0,
+      image: matchingCrypto?.image || item.image || "",
     };
   });
 
@@ -169,7 +170,7 @@ const PortfolioPage = () => {
 
         // Construit l'objet conforme au modèle MongoDB
         const updatedPortfolio = {
-          userId: "12345", // Assure-toi d'avoir un userId valide
+          userId: "12345", // avoir un userId valide
           cryptos: [
             {
               id: editingCard.id,
@@ -229,9 +230,7 @@ const PortfolioPage = () => {
   console.log("Updated Portfolio :", updatedPortfolio);
 
   return (
-    <div className="mx-4 p-4 my-16 md:my-12">
-      <h1 className="text-2xl font-bold mb-4">My Wallet</h1>
-
+    <div className="mx-4 p-4 md:mt-6 mb-20 md:mb-24">
       {updatedPortfolio.length === 0 ? (
         <p className="text-gray-500 text-center">
           Your wallet is empty. Start adding cryptos to track your investments!
@@ -250,17 +249,20 @@ const PortfolioPage = () => {
             realQuantity={editingCard?.quantity || 0}
           />
           {/* Graphique */}
-          <div className="mx-4 mt-16 md:mt-8 flex justify-center items-center">
+          <div className="mx-4 flex justify-center items-center">
             <div className="w-full max-w-lg h-64">
               <h2 className="text-3xl font-semibold mb-4 text-center">
-                Portfolio Distribution
+                Portfolio Overview
               </h2>
               <Pie data={dataToDisplay} options={chartOptions} />
             </div>
           </div>
 
           <h3 className="text-2xl font-bold mt-20 text-center">
-            Total wallet value: ${totalPortfolioValue.toFixed(2)}
+            Total wallet value: $
+            {totalPortfolioValue
+              .toFixed(2)
+              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 text-gray-800 mt-8">
@@ -271,7 +273,9 @@ const PortfolioPage = () => {
                 symbol={item.symbol || ""}
                 price={item.current_price}
                 quantity={item.quantity}
-                totalValue={item.total_value.toFixed(2)}
+                totalValue={item.total_value
+                  .toFixed(2)
+                  .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
                 priceChange={item.priceChange}
                 image={item.image || ""}
                 onDelete={() => {

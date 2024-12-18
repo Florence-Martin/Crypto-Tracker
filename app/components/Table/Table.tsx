@@ -94,7 +94,7 @@ export const Table: React.FC<TableProps> = ({
         </div>
       )}
 
-      <table className="w-full border-collapse rounded-lg bg-background text-foreground">
+      <table className="w-full border-collapse  bg-background text-foreground">
         <thead>
           <tr>
             <th className="border border-gray-300 p-2 text-center">Name</th>
@@ -126,10 +126,12 @@ export const Table: React.FC<TableProps> = ({
               <td className="border border-gray-300 p-2 text-center hidden md:table-cell">
                 {crypto.symbol.toUpperCase()}
               </td>
-              <td className="border border-gray-300 p-2 text-center">
+              <td className="border border-gray-300 p-2 text-end">
                 $
                 {crypto.current_price !== undefined
-                  ? crypto.current_price.toLocaleString()
+                  ? crypto.current_price
+                      .toLocaleString()
+                      .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                   : "N/A"}
               </td>
               <td

@@ -8,7 +8,10 @@
   font-family: "Nunito Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 .storybook-button--primary {
-  background: linear-gradient(90deg, #4a90e2 0%, #58c7f5 100%);
+  background: #3971b1;
+}
+.storybook-button--primary:hover {
+  background: #2f5e9e;
   color: white;
 }
 .storybook-button--secondary {
@@ -17,14 +20,14 @@
   color: #333;
 }
 .storybook-button--small {
-  padding: 10px 16px;
+  padding: 5px 8px;
   font-size: 12px;
 }
 .storybook-button--medium {
-  padding: 11px 20px;
+  padding: 5.5px 10px;
   font-size: 14px;
 }
 .storybook-button--large {
-  padding: 12px 24px;
+  padding: 6px 12px;
   font-size: 16px;
 }

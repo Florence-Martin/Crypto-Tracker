@@ -30,10 +30,8 @@ export const Card: React.FC<CardProps> = ({
   const formattedPriceChange = `${priceChange > 0 ? "+" : ""}${priceChange}%`;
   return (
     <div className="crypto-card">
-      <div className="card-header">
-        <h3>
-          {name} ({symbol?.toUpperCase()})
-        </h3>
+      {/* Section Titre avec Image */}
+      <div className="flex items-center space-x-4 mb-4">
         {image && (
           <Image
             src={image}
@@ -43,7 +41,12 @@ export const Card: React.FC<CardProps> = ({
             height={50}
           />
         )}
+        <div>
+          <h3 className="text-lg font-semibold">{name}</h3>
+          <p className="text-sm text-gray-500">{symbol.toUpperCase()}</p>
+        </div>
       </div>
+
       <div>
         <p>Current Price: ${price.toFixed(2)}</p>
         <p>Quantity: {quantity}</p>

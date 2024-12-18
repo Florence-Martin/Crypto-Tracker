@@ -17,7 +17,7 @@ const CryptoPriceCard: React.FC<CryptoPriceCardProps> = ({
   image,
 }) => {
   return (
-    <div className="p-4 border rounded-lg shadow-lg text-center flex flex-col items-center w-64 h-52">
+    <div className="p-4 border dark:border-white rounded-lg  text-center flex flex-col items-center w-64 h-52">
       <Image
         src={image}
         alt={`${name} logo`}

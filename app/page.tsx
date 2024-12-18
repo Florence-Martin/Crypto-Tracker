@@ -5,9 +5,9 @@ import { SearchBar } from "./components/Searchbar/SearchBar";
 import { useCrypto } from "../app/context/CryptoContext";
 import { usePortfolio } from "../app/context/PortfolioContext";
 import Loader from "./components/Loader/Loader";
-import Hero from "./components/Hero/Hero";
+import Hero from "./components/Hero";
 import { CryptoDashboard } from "./components/Crypto/CryptoDashboard";
-import { BadgeDollarSign } from "lucide-react";
+import { BadgeDollarSign, List, BarChart } from "lucide-react";
 import { Button } from "@/design-system";
 import {
   Card,
@@ -91,7 +91,7 @@ const HomePage: React.FC = () => {
 
   return (
     <main className="relative w-screen min-h-screen bg-background overflow-auto mb-24">
-      <div className="mt-40 md:mt-24 mb-10 md:mb-6">
+      <div className=" md:mt-4 mb-10 md:mb-6">
         {/* Section Hero */}
         <Hero />
 
@@ -109,7 +109,7 @@ const HomePage: React.FC = () => {
       </div>
       <div
         id="add_crypto"
-        className="flex items-center gap-4 mr-8 justify-end mb-2"
+        className="flex flex-col md:flex-row gap-4 mx-4 md:mx-auto items-end md:justify-end md:w-full max-w-6xl mb-2"
       >
         <button
           onClick={() => setIsWalletOpen(true)}
@@ -120,29 +120,31 @@ const HomePage: React.FC = () => {
           <span className="absolute inset-0 -rotate-6 bg-yellow-300 scale-x-0 group-hover:scale-x-100 transition-transform origin-bottom z-0"></span>
         </button>
 
-        <div className="hidden md:flex items-center gap-4">
+        <div className="flex items-center gap-4">
           <Button
             primary={view === "table"}
             label="Table"
-            onClick={() => setView("table")}
             backgroundColor={view === "table" ? "#4CAF50" : "#3F3F46"}
-          />
+            onClick={() => setView("table")}
+            icon={<List className="h-4 w-4" />}
+          ></Button>
           <Button
             primary={view === "graph"}
             label="Graph"
-            onClick={() => setView("graph")}
             backgroundColor={view === "graph" ? "#4CAF50" : "#3F3F46"}
-          />
+            onClick={() => setView("graph")}
+            icon={<BarChart className="h-4 w-4" />}
+          ></Button>
         </div>
       </div>
 
       {/* Conteneur table + graphe */}
-      <div className="flex flex-col md:flex-row gap-4 mx-4 items-stretch">
+      <div className="flex flex-col gap-4 mx-4 md:mx-auto items-stretch md:w-full max-w-6xl">
         {/* Table */}
         <div
           className={`transition-all duration-300 h-full ${
-            view === "table" ? "md:w-3/4 w-full" : "md:w-1/4 w-full"
-          }`}
+            view === "table" ? "block" : "hidden"
+          } block`}
         >
           <CryptoTable
             cryptos={filteredCryptos.map((crypto) => ({
@@ -165,12 +167,11 @@ const HomePage: React.FC = () => {
             }
           />
         </div>
-
         {/* Graph */}
         <div
           className={`transition-all duration-300 h-full ${
-            view === "graph" ? "md:w-3/4 w-full" : "md:w-1/4 w-full"
-          }`}
+            view === "graph" ? "block" : "hidden"
+          } block`}
         >
           {filteredCryptos.length > 1 ? (
             <Card className="mb-6 h-full">

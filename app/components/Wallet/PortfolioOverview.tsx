@@ -86,12 +86,12 @@ export default function PortfolioOverview() {
   const metrics: PortfolioMetric[] = [
     {
       icon: <DollarSign className="w-6 h-6 text-yellow-500" />,
-      label: "Total Assets",
-      value: `$${totalValue.toFixed(2)}`,
+      label: "Updated just now",
+      value: `$${totalValue.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
     },
     {
       icon: <TrendingUp className="w-6 h-6 text-blue-500" />,
-      label: "Total Gain/Loss",
+      label: "Since first investment",
       value: `${totalGainLoss > 0 ? "+" : ""}${totalGainLoss.toFixed(2)}%`,
       className: totalGainLoss >= 0 ? "text-green-600" : "text-red-600",
     },
