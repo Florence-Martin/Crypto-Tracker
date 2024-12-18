@@ -21,7 +21,7 @@ const Wallet: React.FC<WalletProps> = ({ cryptos, onAddToPortfolio }) => {
   const [selectedCryptoId, setSelectedCryptoId] = useState<string>("");
   const [quantity, setQuantity] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
-  const [showToast, setShowToast] = useState<boolean>(false);
+  const [showToast, setShowToast] = useState(false);
 
   const handleAddToPortfolio = () => {
     setError(null);
@@ -47,6 +47,8 @@ const Wallet: React.FC<WalletProps> = ({ cryptos, onAddToPortfolio }) => {
     setQuantity("");
 
     setShowToast(true);
+    console.log("Showing toast now");
+
     setTimeout(() => {
       setShowToast(false);
     }, 5000);
@@ -60,19 +62,21 @@ const Wallet: React.FC<WalletProps> = ({ cryptos, onAddToPortfolio }) => {
       </h2>
 
       {/* Toast */}
-      <div className="fixed top-4 right-4 z-50">
-        {showToast && (
-          <IconToast
-            title="Added to wallet"
-            icon={<CheckCircle className="text-green-500" />}
-            iconSize={24}
-            level="success"
-            onClose={() => setShowToast(false)}
-            immediate
-          >
-            The cryptocurrency has been successfully added to your wallet.
-          </IconToast>
-        )}
+      <div className="fixed top-4 right-4 z-[9999]">
+        {showToast &&
+          (console.log("Rendering IconToast"),
+          (
+            <IconToast
+              title="Added to wallet"
+              icon={<CheckCircle className="text-green-500" />}
+              iconSize={24}
+              level="success"
+              onClose={() => setShowToast(false)}
+              immediate={true}
+            >
+              The cryptocurrency has been successfully added to your wallet.
+            </IconToast>
+          ))}
       </div>
 
       {/* Dropdown */}

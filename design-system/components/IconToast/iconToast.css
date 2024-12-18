@@ -5,15 +5,17 @@
   gap: 1rem;
   padding: 1rem;
   border-radius: 0.5rem;
-  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
   margin-bottom: 1rem;
-  opacity: 0;
-  transform: translateY(-10px);
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+  visibility: visible !important;
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
 
 .toast-visible {
-  opacity: 1;
-  transform: translateY(0);
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+  visibility: visible !important; /* Forcer l'affichage */
 }
 
 /* Icône */

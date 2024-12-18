@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 // import localFont from "next/font/local";
 import "./globals.css";
-import NavBar from "./components/Navbar/NavBar";
+import NavBar from "./components/Navbar";
 import { CryptoProvider } from "./context/CryptoContext";
 import { PortfolioProvider } from "./context/PortfolioContext";
-import Footer from "./components/Footer/Footer";
+import Footer from "./components/Footer";
 import { ThemeProvider } from "next-themes";
 
 export const metadata: Metadata = {
