@@ -111,15 +111,12 @@ const HomePage: React.FC = () => {
         id="add_crypto"
         className="flex flex-col md:flex-row gap-4 mx-4 md:mx-auto items-end md:justify-end md:w-full max-w-6xl mb-2"
       >
-        <button
+        <Button
+          primary
+          label="Add to Wallet"
           onClick={() => setIsWalletOpen(true)}
-          className="relative flex items-center gap-2 text-md font-semibold text-primary transition group"
-        >
-          <BadgeDollarSign className="w-6 h-6 relative z-10" />
-          <span className="relative z-10">Add to Wallet</span>
-          <span className="absolute inset-0 -rotate-6 bg-yellow-300 scale-x-0 group-hover:scale-x-100 transition-transform origin-bottom z-0"></span>
-        </button>
-
+          icon={<BadgeDollarSign className="h-4 w-4" />}
+        ></Button>
         <div className="flex items-center gap-4">
           <Button
             primary={view === "table"}

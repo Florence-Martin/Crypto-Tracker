@@ -94,7 +94,10 @@ const NavBar: React.FC = () => {
               Wallet
             </Link>
             <button
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              onClick={() => {
+                setTheme(theme === "dark" ? "light" : "dark");
+                setTimeout(() => setIsMenuOpen(false), 0); // Forcer la fermeture après le changement
+              }}
               className="flex items-center space-x-2 text-lg transition-colors hover:text-gray-400"
             >
               {theme === "dark" ? (
