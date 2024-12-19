@@ -58,6 +58,7 @@ const HomePage: React.FC = () => {
     alerts.length > 0
       ? alerts.map((alert, index) => ({
           id: `${alert.symbol}-${index}`,
+          symbol: alert.symbol,
           type: alert.name,
           message: `${alert.name} is being tracked.`,
           timestamp: new Date(),
@@ -67,6 +68,7 @@ const HomePage: React.FC = () => {
           {
             id: "no-alert",
             type: "No Alerts selected",
+            symbol: "",
             message: "You have not selected any alerts.",
             timestamp: new Date(),
             image: "",

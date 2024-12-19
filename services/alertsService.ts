@@ -1,72 +1,85 @@
 import { CryptoData } from "@/components/Table/Table";
+const API_URL = "/api/alert";
 
-// ajout d'une alerte
-export async function addAlertToDatabase(crypto: CryptoData, userId: string) {
+export interface AlertData {
+  name: string;
+  symbol: string;
+  price: number;
+  timestamp: string; // ISO string
+}
+
+function handleApiError(response: Response) {
+  if (!response.ok) {
+    return response.json().then((data) => {
+      throw new Error(data.error || "An unexpected error occurred.");
+    });
+  }
+  return response;
+}
+
+// Ajouter une alerte
+export async function addAlertToDatabase(
+  crypto: CryptoData,
+  userId: string
+): Promise<AlertData[]> {
   if (!crypto) {
-    console.error("Crypto data is missing.");
-    return;
+    throw new Error("Crypto data is missing.");
   }
 
-  // Construire l'objet alert avec des valeurs par défaut
-  const alertData = {
+  const alertData: AlertData = {
     name: crypto.name || "Unknown",
     symbol: crypto.symbol || "Unknown",
-    price: crypto.current_price ?? 0, // Utilisation de valeurs par défaut
-    priceChange: crypto.price_change_percentage_24h ?? crypto.priceChange ?? 0,
+    price: crypto.current_price ?? 0,
     timestamp: new Date().toISOString(),
   };
 
-  console.log("Alert data being sent to API:", alertData);
-
   try {
-    const response = await fetch("/api/alert", {
+    const response = await fetch(API_URL, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        userId,
-        alerts: [alertData],
-      }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId, alerts: [alertData] }),
     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(
-        errorData.error || "Failed to add alert to MongoDB. Please try again."
-      );
-    }
-
-    console.log(`Alert for ${crypto.name} added successfully.`);
+    await handleApiError(response);
+    return response.json(); // Retourne les alertes mises à jour
   } catch (error) {
     console.error("Error adding alert to MongoDB:", error);
+    throw error;
   }
 }
 
-// suppression des alertes
-export async function removeAlertFromDatabase(symbol: string, userId: string) {
+// Supprimer une alerte
+export async function removeAlertFromDatabase(
+  symbol: string,
+  userId: string
+): Promise<AlertData[]> {
   try {
     const response = await fetch(
-      `/api/alert?userId=${userId}&symbol=${symbol}`,
+      `${API_URL}?userId=${userId}&symbol=${symbol}`,
       {
         method: "DELETE",
       }
     );
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(
-        errorData.error ||
-          "Failed to remove alert from MongoDB. Please try again."
-      );
-    }
-
-    console.log(`Alert for symbol "${symbol}" removed successfully.`);
+    await handleApiError(response);
+    return response.json(); // Retourne les alertes restantes
   } catch (error) {
-    if (error instanceof Error) {
-      console.error("Error removing alert from MongoDB:", error.message);
-    } else {
-      console.error("Error removing alert from MongoDB:", error);
-    }
+    console.error("Error removing alert from MongoDB:", error);
+    throw error;
+  }
+}
+
+// Récupérer les alertes
+export async function fetchAlertsFromDatabase(
+  userId: string
+): Promise<AlertData[]> {
+  try {
+    const response = await fetch(`${API_URL}?userId=${userId}`);
+    await handleApiError(response);
+    const data = await response.json();
+    return data.data; // Retourne uniquement les données
+  } catch (error) {
+    console.error("Error fetching alerts:", error);
+    throw error;
   }
 }

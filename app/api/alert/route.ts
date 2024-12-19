@@ -7,7 +7,6 @@ interface AlertType {
   name: string;
   symbol: string;
   price: number;
-  priceChange: number;
   timestamp: Date;
 }
 
@@ -20,7 +19,6 @@ const alertSchema = Joi.object({
         name: Joi.string().required(),
         symbol: Joi.string().required(),
         price: Joi.number().required(),
-        priceChange: Joi.number().required(),
         timestamp: Joi.date().required(),
       })
     )
@@ -87,7 +85,6 @@ export async function POST(req: Request) {
         name: alert.name || "Unknown",
         symbol: alert.symbol || "Unknown",
         price: alert.price ?? 0, // Valeur par défaut si le prix est manquant
-        priceChange: alert.priceChange ?? 0, // Valeur par défaut si le changement est manquant
         timestamp: alert.timestamp || new Date(), // Date actuelle si aucune date n'est fournie
       }));
     }

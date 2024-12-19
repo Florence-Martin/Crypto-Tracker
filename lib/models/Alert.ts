@@ -14,7 +14,6 @@ const AlertSchema = new mongoose.Schema(
             default: "Unknown",
           },
           price: { type: Number, required: true, min: 0, default: 0 }, // Minimum 0 et valeur par défaut
-          priceChange: { type: Number, required: true, default: 0 }, // Valeur par défaut
           timestamp: { type: Date, required: true, default: Date.now }, // Date actuelle si manquante
           message: { type: String, default: "" }, // Champ optionnel avec valeur par défaut
         },
