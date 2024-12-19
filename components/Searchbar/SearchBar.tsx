@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Input, Button } from "../../../design-system";
+import { Input, Button } from "../../design-system";
 
 export const SearchBar: React.FC<{
   onSearch: (value: string) => void;

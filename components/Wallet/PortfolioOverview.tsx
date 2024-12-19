@@ -1,5 +1,5 @@
-import { usePortfolio } from "@/app/context/PortfolioContext";
-import { useCrypto } from "@/app/context/CryptoContext";
+import { usePortfolio } from "../../context/PortfolioContext";
+import { useCrypto } from "../../context/CryptoContext";
 import { Card } from "@/components/ui/card";
 import { DollarSign, TrendingUp } from "lucide-react";
 

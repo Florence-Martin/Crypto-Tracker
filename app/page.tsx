@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { SearchBar } from "./components/Searchbar/SearchBar";
-import { useCrypto } from "../app/context/CryptoContext";
-import { usePortfolio } from "../app/context/PortfolioContext";
-import Loader from "./components/Loader/Loader";
-import Hero from "./components/Hero";
-import { CryptoDashboard } from "./components/Crypto/CryptoDashboard";
+import { SearchBar } from "../components/Searchbar/SearchBar";
+import { useCrypto } from "../context/CryptoContext";
+import { usePortfolio } from "../context/PortfolioContext";
+import Loader from "../components/Loader/Loader";
+import Hero from "../components/Hero";
+import { CryptoDashboard } from "../components/Crypto/CryptoDashboard";
 import { BadgeDollarSign, List, BarChart } from "lucide-react";
 import { Button } from "@/design-system";
 import {
@@ -17,11 +17,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import debounce from "lodash/debounce";
-import PortfolioOverview from "./components/Wallet/PortfolioOverview";
-import CryptoAlert from "./components/CryptoAlert/CryptoAlert";
-import { CryptoTable } from "./components/Table/Cryptotable";
-import { CryptoGraph } from "./components/Graph/CryptoGraph";
-import { WalletModal } from "./components/Wallet/WalletModal";
+import PortfolioOverview from "../components/Wallet/PortfolioOverview";
+import CryptoAlert from "../components/CryptoAlert/CryptoAlert";
+import { CryptoTable } from "../components/Table/Cryptotable";
+import { CryptoGraph } from "../components/Graph/CryptoGraph";
+import { WalletModal } from "../components/Wallet/WalletModal";
 
 const HomePage: React.FC = () => {
   const { cryptos, isLoading, error } = useCrypto();

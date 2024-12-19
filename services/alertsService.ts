@@ -1,4 +1,4 @@
-import { CryptoData } from "@/app/components/Table/Table";
+import { CryptoData } from "@/components/Table/Table";
 
 // ajout d'une alerte
 export async function addAlertToDatabase(crypto: CryptoData, userId: string) {
@@ -11,7 +11,7 @@ export async function addAlertToDatabase(crypto: CryptoData, userId: string) {
   const alertData = {
     name: crypto.name || "Unknown",
     symbol: crypto.symbol || "Unknown",
-    price: crypto.current_price ?? crypto.price ?? 0, // Utilisation de valeurs par défaut
+    price: crypto.current_price ?? 0, // Utilisation de valeurs par défaut
     priceChange: crypto.price_change_percentage_24h ?? crypto.priceChange ?? 0,
     timestamp: new Date().toISOString(),
   };

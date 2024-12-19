@@ -28,7 +28,7 @@ export default function CryptoAlert({ alerts }: CryptoAlertsProps) {
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 rounded-lg overflow-hidden">
                   <Image
-                    src={alert.image || "/alertWarning.svg"}
+                    src={alert.image || "/images/alertWarning.svg"}
                     alt={`${alert.type} icon`}
                     width={64}
                     height={64}
