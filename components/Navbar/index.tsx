@@ -14,6 +14,8 @@ const NavBar: React.FC = () => {
     setMounted(true); // Une fois monté côté client
   }, []);
 
+  const [currency, setCurrency] = useState("USD");
+
   if (!mounted) return null;
 
   return (
@@ -48,6 +50,24 @@ const NavBar: React.FC = () => {
               Wallet
             </Link>
           </nav>
+          <div className="flex items-center gap-2">
+            <button
+              className={`px-3 py-1 rounded-full text-gray-500 ${
+                currency === "USD" ? "bg-blue-500 text-white" : "bg-gray-200"
+              }`}
+              onClick={() => setCurrency("USD")}
+            >
+              $
+            </button>
+            <button
+              className={`px-3 py-1 rounded-full text-gray-500  ${
+                currency === "EUR" ? "bg-blue-500 text-white" : "bg-gray-200"
+              }`}
+              onClick={() => setCurrency("EUR")}
+            >
+              €
+            </button>
+          </div>
 
           {/* Bouton Thème */}
           <button

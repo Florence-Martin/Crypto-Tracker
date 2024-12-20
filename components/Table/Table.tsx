@@ -79,7 +79,7 @@ export const Table: React.FC<TableProps> = ({
   }
 
   return (
-    <div className="relative">
+    <div className="relative p-3">
       {showToast && (
         <div className="fixed top-4 right-4 z-50">
           <IconToast

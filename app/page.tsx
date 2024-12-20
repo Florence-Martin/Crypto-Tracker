@@ -140,7 +140,7 @@ const HomePage: React.FC = () => {
       </div>
 
       {/* Conteneur table + graphe */}
-      <div className="flex flex-col gap-4 mx-4 md:mx-auto items-stretch md:w-full max-w-6xl">
+      <div className="flex flex-col gap-4 mx-4 md:mx-auto items-stretch md:w-full max-w-6xl rounded-lg border-2 dark:border-white">
         {/* Table */}
         <div
           className={`transition-all duration-300 h-full ${
