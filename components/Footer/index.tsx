@@ -2,7 +2,7 @@ import React from "react";
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-background  text-primary-foreground  dark:text-card-foreground py-6 mt-8 fixed bottom-0 w-full">
+    <footer className="bg-background border-t text-primary-foreground  dark:text-card-foreground py-6 mt-8 fixed bottom-0 w-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
           {/* Texte du footer */}

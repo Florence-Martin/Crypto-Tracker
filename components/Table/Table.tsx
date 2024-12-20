@@ -7,6 +7,8 @@ import {
   removeAlertFromDatabase,
 } from "@/services/alertsService";
 import Image from "next/image";
+import { useCurrency } from "@/context/CurrencyContext"; // Import du contexte de devise
+import { convertCurrency } from "@/lib/convertCurrency"; // Import de la fonction de conversion
 
 export interface CryptoData {
   name: string;
@@ -30,6 +32,7 @@ export const Table: React.FC<TableProps> = ({
   onAlertChange,
 }) => {
   const [showToast, setShowToast] = useState(false);
+  const { currency, conversionRate } = useCurrency(); // Récupère la devise active et le taux de conversion
 
   const userId = "12345"; // À remplacer par l'ID utilisateur réel
 
@@ -102,7 +105,7 @@ export const Table: React.FC<TableProps> = ({
               Symbol
             </th>
             <th className="border border-gray-300 p-2 text-center">
-              Price (USD)
+              Price {currency}
             </th>
             <th className="border border-gray-300 p-2 text-center">
               Change (%)
@@ -126,14 +129,17 @@ export const Table: React.FC<TableProps> = ({
               <td className="border border-gray-300 p-2 text-center hidden md:table-cell">
                 {crypto.symbol.toUpperCase()}
               </td>
+
               <td className="border border-gray-300 p-2 text-end">
-                $
                 {crypto.current_price !== undefined
-                  ? crypto.current_price
-                      .toLocaleString()
-                      .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                  ? convertCurrency(
+                      crypto.current_price,
+                      conversionRate,
+                      currency
+                    ).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                   : "N/A"}
               </td>
+
               <td
                 className={`border border-gray-300 p-2 text-center ${
                   crypto.priceChange >= 0 ? "text-green-500" : "text-red-500"

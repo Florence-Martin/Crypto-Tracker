@@ -96,21 +96,18 @@ const HomePage: React.FC = () => {
   return (
     <main className="relative w-screen min-h-screen bg-background overflow-auto mb-24">
       <div className=" md:mt-4 mb-10 md:mb-6">
-        {/* Section Hero */}
         <Hero />
-
         <div className="grid grid-cols-1 md:grid-cols-2 border-2">
-          {/* Section Popular Cryptocurrencies */}
           <CryptoDashboard />
-
-          {/* Section Portfolio Overview */}
           <PortfolioOverview />
         </div>
       </div>
-      {/* Barre de recherche */}
+
       <div className="flex mx-4 flex-col md:flex-row mb-6 justify-center">
         <SearchBar onSearch={handleSearch} />
       </div>
+
+      {/* Ajout à Wallet + Vue Table/Graph */}
       <div
         id="add_crypto"
         className="flex flex-col md:flex-row gap-4 mx-4 md:mx-auto items-end md:justify-end md:w-full max-w-6xl mb-2"

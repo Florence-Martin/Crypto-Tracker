@@ -2,6 +2,8 @@ import { usePortfolio } from "../../context/PortfolioContext";
 import { useCrypto } from "../../context/CryptoContext";
 import { Card } from "@/components/ui/card";
 import { DollarSign, TrendingUp } from "lucide-react";
+import { useCurrency } from "../../context/CurrencyContext"; // Importer le contexte de devise
+import { convertCurrency } from "../../lib/convertCurrency"; // Importer la fonction de conversion
 
 interface PortfolioMetric {
   icon: JSX.Element;
@@ -13,6 +15,7 @@ interface PortfolioMetric {
 export default function PortfolioOverview() {
   const { portfolio } = usePortfolio();
   const { cryptos } = useCrypto();
+  const { currency, conversionRate } = useCurrency(); // Récupère la devise et le taux de conversion
 
   // Regrouper les cryptos identiques dans le portefeuille
   const groupedPortfolio = portfolio.reduce(
@@ -67,6 +70,13 @@ export default function PortfolioOverview() {
     0
   );
 
+  // Convertir la valeur totale du portefeuille dans la devise sélectionnée
+  const convertedTotalValue = convertCurrency(
+    totalValue,
+    conversionRate,
+    currency
+  );
+
   // Calculer les gains/pertes totaux en valeur monétaire
   const totalGainLossValue = updatedPortfolio.reduce(
     (acc, item) => acc + item.gainLossValue,
@@ -87,7 +97,7 @@ export default function PortfolioOverview() {
     {
       icon: <DollarSign className="w-6 h-6 text-yellow-500" />,
       label: "Updated just now",
-      value: `$${totalValue.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
+      value: `${convertedTotalValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`,
     },
     {
       icon: <TrendingUp className="w-6 h-6 text-blue-500" />,

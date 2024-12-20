@@ -4,6 +4,7 @@ import Link from "next/link";
 import { House, Wallet, Moon, Sun, Menu, X } from "lucide-react";
 import CryptoLogo3D from "../Crypto/CryptoLogo3D";
 import { useTheme } from "next-themes";
+import CurrencySwitch from "../Switch/CurrencySwitch";
 
 const NavBar: React.FC = () => {
   const { theme, setTheme } = useTheme();
@@ -13,8 +14,6 @@ const NavBar: React.FC = () => {
   useEffect(() => {
     setMounted(true); // Une fois monté côté client
   }, []);
-
-  const [currency, setCurrency] = useState("USD");
 
   if (!mounted) return null;
 
@@ -50,24 +49,8 @@ const NavBar: React.FC = () => {
               Wallet
             </Link>
           </nav>
-          <div className="flex items-center gap-2">
-            <button
-              className={`px-3 py-1 rounded-full text-gray-500 ${
-                currency === "USD" ? "bg-blue-500 text-white" : "bg-gray-200"
-              }`}
-              onClick={() => setCurrency("USD")}
-            >
-              $
-            </button>
-            <button
-              className={`px-3 py-1 rounded-full text-gray-500  ${
-                currency === "EUR" ? "bg-blue-500 text-white" : "bg-gray-200"
-              }`}
-              onClick={() => setCurrency("EUR")}
-            >
-              €
-            </button>
-          </div>
+
+          <CurrencySwitch />
 
           {/* Bouton Thème */}
           <button

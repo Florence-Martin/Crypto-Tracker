@@ -6,6 +6,7 @@ import { CryptoProvider } from "../context/CryptoContext";
 import { PortfolioProvider } from "../context/PortfolioContext";
 import Footer from "../components/Footer";
 import { ThemeProvider } from "next-themes";
+import { CurrencyProvider } from "@/context/CurrencyContext";
 
 export const metadata: Metadata = {
   title: "Crypto-Tracker",
@@ -23,18 +24,22 @@ export default function RootLayout({
         <link rel="icon" href="images/crypto_tracker_logo.ico" />
       </head>
       <body className={`bg-cover bg-center`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light" // Thème forcé pour éviter les conflits hydratation
-          enableSystem={true} // active la détection automatique du système
-          disableTransitionOnChange={true}
-        >
-          <NavBar />
+        <CurrencyProvider>
           <CryptoProvider>
-            <PortfolioProvider>{children}</PortfolioProvider>
+            <PortfolioProvider>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="light"
+                enableSystem={true}
+                disableTransitionOnChange={true}
+              >
+                <NavBar />
+                {children}
+                <Footer />
+              </ThemeProvider>
+            </PortfolioProvider>
           </CryptoProvider>
-          <Footer />
-        </ThemeProvider>
+        </CurrencyProvider>
       </body>
     </html>
   );

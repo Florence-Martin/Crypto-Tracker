@@ -48,9 +48,9 @@ export const Card: React.FC<CardProps> = ({
       </div>
 
       <div>
-        <p>Current Price: ${price.toFixed(2)}</p>
+        <p>Current Price: {price.toFixed(2)}</p>
         <p>Quantity: {quantity}</p>
-        <p>Total Value: ${totalValue}</p>
+        <p>Total Value: {totalValue}</p>
         <p className={priceChange >= 0 ? "positive" : "negative"}>
           {formattedPriceChange}
         </p>

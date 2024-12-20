@@ -8,14 +8,17 @@ import Loader from "../../components/Loader/Loader";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import CryptoModal from "../../design-system/components/Modal/CryptoModal";
+import { useCurrency } from "../../context/CurrencyContext"; // Contexte devise
+import { convertCurrency } from "../../lib/convertCurrency"; // Fonction de conversion
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const PortfolioPage = () => {
-  const { portfolio, setPortfolio } = usePortfolio(); // Récupère le portefeuille du contexte
-  const { cryptos, isLoading, error } = useCrypto(); // Récupère les cryptos disponibles et leurs prix
-  const [isEditing, setIsEditing] = useState(false); // État pour afficher la modal
-  const [editingCard, setEditingCard] = useState<PortfolioItem | null>(null); // Carte en cours de modification
+  const { portfolio, setPortfolio } = usePortfolio(); // Contexte du portefeuille
+  const { cryptos, isLoading, error } = useCrypto(); // Contexte des cryptos
+  const { currency, conversionRate } = useCurrency(); // Contexte devise
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingCard, setEditingCard] = useState<PortfolioItem | null>(null);
 
   if (!portfolio || isLoading) {
     return (
@@ -33,9 +36,7 @@ const PortfolioPage = () => {
     );
   }
 
-  // console.log("Portfolio Data:", portfolio);
-
-  // Regroupe les cryptos identiques dans le portefeuille pour éviter les doublons
+  // Regroupement des cryptos identiques
   const groupedPortfolio = portfolio.reduce<
     Record<string, (typeof portfolio)[0]>
   >((accumulator, item) => {
@@ -50,34 +51,46 @@ const PortfolioPage = () => {
 
   const portfolioArray = Object.values(groupedPortfolio);
 
-  // Synchronise les prix actuels des cryptos et calcule les pourcentages
+  // Mise à jour des cryptos avec les données actuelles
   const updatedPortfolio = portfolioArray.map((item) => {
     const matchingCrypto = cryptos.find((crypto) => crypto.id === item.id);
 
+    const currentPrice =
+      matchingCrypto?.current_price || item.current_price || 0;
+    const totalValue = item.quantity * currentPrice;
+
     return {
       ...item,
-      _id: item._id, // Assure que _id existe toujours
-      current_price: matchingCrypto?.current_price || item.current_price || 0,
-      total_value:
-        item.quantity *
-        (matchingCrypto?.current_price || item.current_price || 0),
+      current_price: currentPrice,
+      total_value: totalValue,
       priceChange:
         matchingCrypto?.price_change_percentage_24h ||
         item.price_change_percentage_24h ||
         0,
       image: matchingCrypto?.image || item.image || "",
+      converted_price: convertCurrency(currentPrice, conversionRate, currency),
+      converted_total_value: convertCurrency(
+        totalValue,
+        conversionRate,
+        currency
+      ),
     };
   });
-
   // console.log("Updated Portfolio:", updatedPortfolio);
 
   // Calcul de la valeur totale du portefeuille
   const totalPortfolioValue = updatedPortfolio.reduce(
-    (accumulator, item) => accumulator + item.total_value,
+    (acc, item) => acc + item.total_value,
     0
   );
 
-  // Génération des couleurs aléatoires pour le graphique
+  const convertedTotalPortfolioValue = convertCurrency(
+    totalPortfolioValue,
+    conversionRate,
+    currency
+  );
+
+  // Configuration du graphique
   const generateColors = (length: number) =>
     Array.from(
       { length },
@@ -106,25 +119,14 @@ const PortfolioPage = () => {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: "bottom" as "top" | "left" | "bottom" | "right",
-        labels: {
-          font: {
-            size: 14,
-          },
-        },
+        position: "bottom" as const,
+        labels: { font: { size: 14 } },
       },
     },
   };
 
-  const dataToDisplay =
-    chartData.datasets[0].data.length > 0
-      ? chartData
-      : { labels: [], datasets: [] };
-
-  // Fonction pour supprimer une Card
+  // Suppression d'une Card
   const handleDeleteCard = (documentId: string) => {
-    console.log("ID principal envoyé pour suppression :", documentId);
-
     if (!documentId) {
       console.error("ID manquant pour la suppression.");
       return;
@@ -136,7 +138,6 @@ const PortfolioPage = () => {
           setPortfolio((prev) =>
             prev.filter((item) => item._id !== documentId)
           );
-          console.log("Crypto supprimée avec succès !");
         } else {
           console.error("Erreur lors de la suppression :", response.statusText);
         }
@@ -144,23 +145,22 @@ const PortfolioPage = () => {
       .catch((error) => console.error("Erreur réseau :", error));
   };
 
-  // Fonction pour modifier une Card
+  // Mise à jour d'une Card
   const handleUpdateCard = (id: string) => {
     const cardToEdit = portfolio.find((item) => item._id === id);
     if (cardToEdit) {
       setEditingCard(cardToEdit);
-      setIsEditing(true); // Affichez la modal
+      setIsEditing(true);
     }
   };
 
-  // Fonction appelée lorsqu'on sauvegarde les modifications
+  // Sauvegarde des modifications
   const handleSaveChanges = async (updatedData: {
     action: string;
     quantity: number;
   }) => {
     if (editingCard) {
       try {
-        // Calcule la nouvelle quantité
         const updatedQuantity =
           updatedData.action === "buy"
             ? editingCard.quantity + updatedData.quantity
@@ -168,9 +168,8 @@ const PortfolioPage = () => {
 
         const updatedTotalValue = updatedQuantity * editingCard.current_price;
 
-        // Construit l'objet conforme au modèle MongoDB
         const updatedPortfolio = {
-          userId: "12345", // avoir un userId valide
+          userId: "12345",
           cryptos: [
             {
               id: editingCard.id,
@@ -190,7 +189,6 @@ const PortfolioPage = () => {
           ],
         };
 
-        // Envoie la requête PUT avec le bon format
         const response = await fetch(`/api/portfolio?id=${editingCard._id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -198,9 +196,6 @@ const PortfolioPage = () => {
         });
 
         if (response.ok) {
-          const _result = await response.json();
-
-          // Met à jour le contexte local
           setPortfolio((prev) =>
             prev.map((item) =>
               item._id === editingCard._id
@@ -212,23 +207,16 @@ const PortfolioPage = () => {
                 : item
             )
           );
-
-          console.log("Crypto mise à jour avec succès !");
           setIsEditing(false);
           setEditingCard(null);
         } else {
-          console.error(
-            "Erreur lors de la mise à jour :",
-            await response.text()
-          );
+          console.error("Erreur lors de la mise à jour :", response.statusText);
         }
       } catch (error) {
         console.error("Erreur réseau :", error);
       }
     }
   };
-  console.log("Updated Portfolio :", updatedPortfolio);
-
   return (
     <div className="mx-4 p-4 md:mt-6 mb-20 md:mb-24">
       {updatedPortfolio.length === 0 ? (
@@ -237,7 +225,6 @@ const PortfolioPage = () => {
         </p>
       ) : (
         <>
-          {/* Modal */}
           <CryptoModal
             isOpen={isEditing}
             onClose={() => {
@@ -248,53 +235,36 @@ const PortfolioPage = () => {
             initialQuantity={editingCard?.quantity || 0}
             realQuantity={editingCard?.quantity || 0}
           />
-          {/* Graphique */}
           <div className="mx-4 flex justify-center items-center">
             <div className="w-full max-w-lg h-64">
               <h2 className="text-3xl font-semibold mb-4 text-center">
                 Portfolio Overview
               </h2>
-              <Pie data={dataToDisplay} options={chartOptions} />
+              <Pie data={chartData} options={chartOptions} />
             </div>
           </div>
-
           <h3 className="text-2xl font-bold mt-20 text-center">
-            Total wallet value: $
-            {totalPortfolioValue
-              .toFixed(2)
-              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+            Total wallet value:
+            <span className="ml-2">
+              {convertedTotalPortfolioValue.replace(
+                /\B(?=(\d{3})+(?!\d))/g,
+                ","
+              )}
+            </span>
           </h3>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 text-gray-800 mt-8">
-            {updatedPortfolio.map((item, index) => (
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8">
+            {updatedPortfolio.map((item) => (
               <Card
-                key={`${item._id}-${index}`}
-                name={item.name || "Unknown"}
-                symbol={item.symbol || ""}
+                key={item._id}
+                name={item.name}
+                symbol={item.symbol}
                 price={item.current_price}
                 quantity={item.quantity}
-                totalValue={item.total_value
-                  .toFixed(2)
-                  .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                totalValue={item.converted_total_value.toLocaleString()}
                 priceChange={item.priceChange}
-                image={item.image || ""}
-                onDelete={() => {
-                  if (item._id) {
-                    if (confirm("Are you sure you want to delete this item?")) {
-                      handleDeleteCard(item._id);
-                    }
-                  } else {
-                    console.error(
-                      "ObjectId est manquant pour cette carte :",
-                      item
-                    );
-                  }
-                }}
-                onUpdate={() => {
-                  if (item._id) {
-                    handleUpdateCard(item._id);
-                  }
-                }}
+                image={item.image}
+                onDelete={() => handleDeleteCard(item._id || "")}
+                onUpdate={() => handleUpdateCard(item._id || "")}
               />
             ))}
           </div>

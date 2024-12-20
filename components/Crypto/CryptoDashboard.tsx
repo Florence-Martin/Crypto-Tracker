@@ -3,9 +3,12 @@
 import React from "react";
 import { useCrypto } from "../../context/CryptoContext";
 import CryptoPriceCard from "./CryptoPriceCard";
+import { useCurrency } from "../../context/CurrencyContext"; // Importer le CurrencyContext
+import { convertCurrency } from "../../lib/convertCurrency"; // Importer la fonction de conversion
 
 export function CryptoDashboard() {
   const { cryptos, isLoading, error } = useCrypto();
+  const { currency, conversionRate } = useCurrency(); // Récupérer la devise et le taux de conversion
 
   if (isLoading) {
     return <p>Loading...</p>;
@@ -24,7 +27,8 @@ export function CryptoDashboard() {
     .map((crypto) => ({
       name: crypto.name,
       symbol: crypto.symbol.toUpperCase(),
-      price: crypto.current_price,
+      // Convertir le prix en fonction de la devise sélectionnée
+      price: convertCurrency(crypto.current_price, conversionRate, currency),
       percentageChange: crypto.price_change_percentage_24h,
       image: crypto.image,
     }));

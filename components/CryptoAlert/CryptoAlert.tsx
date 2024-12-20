@@ -2,6 +2,8 @@ import { useCrypto } from "@/context/CryptoContext";
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
 import { format } from "date-fns";
+import { useCurrency } from "@/context/CurrencyContext"; // Importer le hook
+import { convertCurrency } from "../../lib/convertCurrency"; // Importer la fonction de conversion
 
 interface CryptoAlert {
   id: string;
@@ -18,6 +20,7 @@ interface CryptoAlertsProps {
 
 export default function CryptoAlert({ alerts }: CryptoAlertsProps) {
   const { cryptos } = useCrypto();
+  const { currency, conversionRate } = useCurrency(); // Accéder à la devise et au taux de conversion
 
   console.log("Cryptos from context in CryptoAlert:", cryptos);
 
@@ -74,8 +77,14 @@ export default function CryptoAlert({ alerts }: CryptoAlertsProps) {
                     {cryptoData && (
                       <div>
                         <p>
-                          Current Price: $
-                          {cryptoData?.current_price ?? "Data not available"}
+                          Current Price:
+                          <span className="ml-2">
+                            {convertCurrency(
+                              cryptoData.current_price ?? 0,
+                              conversionRate,
+                              currency
+                            )}
+                          </span>
                         </p>
                         <p>
                           24h Change:
