@@ -48,8 +48,10 @@ const HomePage: React.FC = () => {
   }, [cryptos]);
 
   const handleSearch = debounce((searchTerm: string) => {
-    const filtered = cryptos.filter((crypto) =>
-      crypto.name.toLowerCase().includes(searchTerm.toLowerCase())
+    const filtered = cryptos.filter(
+      (crypto) =>
+        crypto.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        crypto.symbol.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredCryptos(filtered);
   }, 300);

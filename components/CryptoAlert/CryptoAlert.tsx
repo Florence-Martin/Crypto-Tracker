@@ -68,16 +68,18 @@ export default function CryptoAlert({ alerts }: CryptoAlertsProps) {
                     </h2>
                     <p>{alert.message}</p>
                     <p>{formatDate(alert.timestamp)}</p>
-                    <div>
-                      <p>
-                        Current Price: $
-                        {cryptoData?.current_price ?? "Data not available"}
-                      </p>
-                      <p>
-                        24h Change:{" "}
-                        {cryptoData?.price_change_percentage_24h ?? "N/A"}%
-                      </p>
-                    </div>
+                    {cryptoData && (
+                      <div>
+                        <p>
+                          Current Price: $
+                          {cryptoData?.current_price ?? "Data not available"}
+                        </p>
+                        <p>
+                          24h Change:{" "}
+                          {cryptoData?.price_change_percentage_24h ?? "N/A"}%
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
               </Card>

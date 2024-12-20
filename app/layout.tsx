@@ -20,7 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/crypto_tracker_logo.ico" />
+        <link rel="icon" href="images/crypto_tracker_logo.ico" />
       </head>
       <body className={`bg-cover bg-center`}>
         <ThemeProvider
