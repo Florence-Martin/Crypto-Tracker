@@ -2,7 +2,7 @@
   border: 1px solid hsl(var(--border)) !important;
   border-radius: var(--radius);
   padding: 16px;
-  background-color: hsl(var(--card));
+  /* background-color: hsl(var(--card)); */
   color: hsl(var(--card-foreground));
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   margin: 8px;
@@ -10,7 +10,7 @@
 }
 
 .dark .crypto-card {
-  background-color: hsl(var(--card));
+  border: 1px solid white !important;
   color: hsl(var(--card-foreground));
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
 }

@@ -51,7 +51,10 @@ export default function CryptoAlert({ alerts }: CryptoAlertsProps) {
             const cryptoData = getCryptoData(alert.symbol);
 
             return (
-              <Card key={`${alert.id}-${index}`} className="p-4">
+              <Card
+                key={`${alert.id}-${index}`}
+                className="p-4 dark:border-white"
+              >
                 <div className="flex items-center gap-4">
                   <div className="w-16 h-16 rounded-lg overflow-hidden">
                     <Image
@@ -75,8 +78,16 @@ export default function CryptoAlert({ alerts }: CryptoAlertsProps) {
                           {cryptoData?.current_price ?? "Data not available"}
                         </p>
                         <p>
-                          24h Change:{" "}
-                          {cryptoData?.price_change_percentage_24h ?? "N/A"}%
+                          24h Change:
+                          <span
+                            className={`ml-2 ${
+                              cryptoData?.price_change_percentage_24h < 0
+                                ? "text-red-500"
+                                : "text-green-500"
+                            }`}
+                          >
+                            {cryptoData?.price_change_percentage_24h ?? "N/A"}%
+                          </span>
                         </p>
                       </div>
                     )}

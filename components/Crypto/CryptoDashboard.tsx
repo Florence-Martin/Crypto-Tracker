@@ -37,7 +37,7 @@ export function CryptoDashboard() {
       </h1>
 
       {/* Grille des cartes des cryptos */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto justify-items-center">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto justify-items-center">
         {selectedCryptos.map((crypto) => (
           <CryptoPriceCard
             key={crypto.symbol}
