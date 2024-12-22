@@ -39,13 +39,30 @@ const HomePage: React.FC = () => {
       price_change_percentage_24h: number;
       image: string;
     }[]
-  >([]);
+  >(() => {
+    // Vérifie si le code est exécuté côté client (navigateur)
+    if (typeof window !== "undefined") {
+      // Tente de récupérer les alertes déjà sauvegardées dans LocalStorage
+      const savedAlerts = localStorage.getItem("crypto-alerts");
+      return savedAlerts ? JSON.parse(savedAlerts) : [];
+    }
+    // Si le code est exécuté côté serveur (lors de l'exécution initiale avec Next.js),
+    // retourne un tableau vide pour éviter une erreur liée à l'absence de `localStorage`
+    return [];
+  });
 
   useEffect(() => {
     if (cryptos && cryptos.length > 0) {
       setFilteredCryptos(cryptos);
     }
   }, [cryptos]);
+
+  // Sauvegarde les alertes dans LocalStorage dès qu'elles changent
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("crypto-alerts", JSON.stringify(alerts));
+    }
+  }, [alerts]);
 
   const handleSearch = debounce((searchTerm: string) => {
     const filtered = cryptos.filter(
@@ -55,6 +72,39 @@ const HomePage: React.FC = () => {
     );
     setFilteredCryptos(filtered);
   }, 300);
+
+  // Chargement initial depuis MongoDB
+  useEffect(() => {
+    // Vérifie que le code s'exécute côté client
+    if (typeof window !== "undefined") {
+      async function fetchAlertsFromMongoDB() {
+        try {
+          const userId = "12345"; // Remplacez par l'ID utilisateur réel
+          const response = await fetch(`/api/alert?userId=${userId}`);
+
+          if (!response.ok) {
+            console.error(
+              `Erreur lors de la récupération des alertes : ${response.status} ${response.statusText}`
+            );
+            return;
+          }
+
+          const data = await response.json();
+
+          if (Array.isArray(data?.data)) {
+            setAlerts(data.data);
+            localStorage.setItem("crypto-alerts", JSON.stringify(data.data));
+          } else {
+            console.error("Les données reçues ne sont pas un tableau :", data);
+          }
+        } catch (error) {
+          console.error("Erreur lors de la récupération des alertes :", error);
+        }
+      }
+
+      fetchAlertsFromMongoDB();
+    }
+  }, []);
 
   const alertDetails =
     alerts.length > 0
