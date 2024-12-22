@@ -138,7 +138,6 @@ const Wallet: React.FC<WalletProps> = ({ cryptos, onAddToPortfolio }) => {
         size="medium"
         label="Add"
         onClick={handleAddToPortfolio}
-        backgroundColor="var(--primary)"
         color="var(--primary-foreground)"
       />
     </div>

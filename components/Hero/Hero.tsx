@@ -5,8 +5,9 @@ export default function Hero() {
         Track Your Crypto Portfolio
       </h1>
       <p className="mt-4 text-xl text-muted-foreground max-w-[700px] mx-auto">
-        Monitor your cryptocurrency investments in real-time. Get detailed
-        insights, set price alerts, and manage your portfolio with ease.
+        Monitor your crypto-currency investments in real time. Get detailed
+        information, set price alerts and manage your portfolio easily and
+        securely, without trading or swapping.
       </p>
     </section>
   );
