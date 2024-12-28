@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { usePortfolio, PortfolioItem } from "../../context/PortfolioContext";
 import { useCrypto } from "../../context/CryptoContext";
 import { Card } from "@/design-system";
-import Loader from "../../components/Loader/Loader";
+import Loader from "@/components/Loader/Loader";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import CryptoModal from "../../design-system/components/Modal/CryptoModal";

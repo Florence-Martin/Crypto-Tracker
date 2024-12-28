@@ -1,10 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { SearchBar } from "../components/Searchbar/SearchBar";
 import { useCrypto } from "../context/CryptoContext";
 import { usePortfolio } from "../context/PortfolioContext";
-import Loader from "../components/Loader/Loader";
+import Loader from "@/components/Loader/Loader";
 import Hero from "../components/Hero";
 import { CryptoDashboard } from "../components/Crypto/CryptoDashboard";
 import { BadgeDollarSign, List, BarChart } from "lucide-react";
@@ -18,10 +17,11 @@ import {
 } from "@/components/ui/card";
 import debounce from "lodash/debounce";
 import PortfolioOverview from "../components/Wallet/PortfolioOverview";
-import CryptoAlert from "../components/CryptoAlert/CryptoAlert";
+import CryptoAlert from "@/components/CryptoAlert/CryptoAlert";
 import { CryptoTable } from "../components/Table/Cryptotable";
-import { CryptoGraph } from "../components/Graph/CryptoGraph";
+import { CryptoGraph } from "@/components/Graph/CryptoGraph";
 import { WalletModal } from "../components/Wallet/WalletModal";
+import { SearchBar } from "@/components/Searchbar/SearchBar";
 
 const HomePage: React.FC = () => {
   const { cryptos, isLoading, error } = useCrypto();
@@ -154,6 +154,7 @@ const HomePage: React.FC = () => {
       </div>
 
       <div className="flex mx-4 flex-col md:flex-row mb-6 justify-center">
+        {/* <SearchBar onSearch={handleSearch} /> */}
         <SearchBar onSearch={handleSearch} />
       </div>
 
