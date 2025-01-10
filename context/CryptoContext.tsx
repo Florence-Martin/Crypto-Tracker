@@ -2,7 +2,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { fetchCryptos, Crypto } from "@/services/cryptoService"; // Import du service et du type
+import { fetchCryptos, Crypto } from "../services/cryptoService";
 
 interface CryptoContextProps {
   cryptos: Crypto[]; // Liste des cryptos disponibles
