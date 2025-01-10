@@ -18,6 +18,8 @@
 
 - **next-themes**: for effortless theme switching (light/dark mode), enhancing user experience and visual accessibility.
 
+- **Vitest**: A fast and lightweight testing framework for Vite projects, providing a seamless testing experience with built-in support for TypeScript, JSX, and more.
+
 This combination of tools allows for the creation of a modern, responsive, and visually appealing user interface, while ensuring a clean and easily maintainable code structure. By leveraging these technologies, **Crypto Tracker** delivers an optimal balance between performance, design, and user-centric functionality.
 
 ## Getting Started

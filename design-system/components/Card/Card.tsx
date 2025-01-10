@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import "./card.css";
-import { Button } from "@/design-system";
+import { Button } from "../Button/Button";
 import { PencilLine, Trash2 } from "lucide-react";
 
 export interface CardProps {
