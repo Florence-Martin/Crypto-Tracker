@@ -41,7 +41,7 @@
     "styled-jsx": "^5.1.6",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
-    "vite": "^6.0.7"
+    "vite": "^6.3.2"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^3.2.2",
